@@ -21,22 +21,15 @@ import { toast } from '../components/toast.js';
 export function renderBusinessAdminView(activeTab = 'dashboard') {
   const session = authService.getSession();
   const businessId = session?.business_id;
-  const business = (businessId ? businessService.getById(businessId) : null) || businessService.getAll()[0] || null;
+  let business = (businessId ? businessService.getById(businessId) : null) || businessService.getAll()[0] || null;
 
   if (!business) {
-    const emptyContainer = document.createElement('div');
-    emptyContainer.className = 'max-w-xl mx-auto p-8 flex flex-col items-center justify-center min-h-[60vh] text-center';
-    emptyContainer.innerHTML = `
-      <div class="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl space-y-4 w-full">
-        <span class="text-4xl block">\uD83C\uDFE2</span>
-        <h2 class="text-lg font-bold text-white">No tienes ning\u00FAn comercio activo</h2>
-        <p class="text-xs text-zinc-400">Accede al Panel Super Admin para registrar tu primer comercio y gestionar tarjetas de fidelizaci\u00F3n.</p>
-        <a href="#/vynta/dashboard" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-bold text-xs shadow-lg transition">
-          <span>+</span> Ir al Panel Super Admin
-        </a>
-      </div>
-    `;
-    return emptyContainer;
+    business = businessService.create({
+      name: 'Café & Lounge Gourmet',
+      category: 'Restauración / Cafetería',
+      status: 'active',
+      plan: 'GROWTH'
+    }, session);
   }
 
   const program = loyaltyService.getProgram(business.id);

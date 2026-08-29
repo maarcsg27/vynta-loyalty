@@ -12,7 +12,18 @@ export function seedInitialData() {
     return date.toISOString();
   };
 
-  const businesses = [];
+  const businesses = [
+    {
+      id: 'biz_default',
+      name: 'Café & Lounge Gourmet',
+      category: 'Restauración / Cafetería',
+      address: 'Calle Mayor 14, Madrid',
+      phone: '+34 910 000 000',
+      status: 'active',
+      plan: 'GROWTH',
+      created_at: d(0)
+    }
+  ];
 
   const business_users = [
     {
@@ -27,7 +38,26 @@ export function seedInitialData() {
     }
   ];
 
-  const loyalty_programs = [];
+  const loyalty_programs = [
+    {
+      id: 'prog_default',
+      business_id: 'biz_default',
+      name: 'Tarjeta Cliente VIP',
+      card_type: 'points',
+      points_required: 100,
+      stamps_required: 10,
+      reward_name: 'Café Especial + Postre',
+      active: true,
+      branding: {
+        bg_gradient_from: '#0F172A',
+        bg_gradient_to: '#0F172A',
+        primary_color: '#0EA5E9',
+        secondary_color: '#38BDF8',
+        text_color: '#FFFFFF'
+      },
+      created_at: d(0)
+    }
+  ];
   const rewards = [];
   const customers = [];
   const loyalty_cards = [];
