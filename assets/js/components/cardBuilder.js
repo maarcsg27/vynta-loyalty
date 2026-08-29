@@ -347,6 +347,31 @@ export function renderCardBuilder(businessId) {
               </div>
             </div>
 
+            <!-- Red Error Alert Container for Logo -->
+            <div id="alert-logo-error" class="hidden mt-3 p-3.5 rounded-2xl bg-rose-500/10 border-2 border-rose-500/40 text-rose-200 text-xs space-y-1.5 animate-fade-in shadow-lg">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2.5">
+                  <span class="text-rose-400 text-base leading-none shrink-0 mt-0.5">\u26A0\uFE0F</span>
+                  <div>
+                    <strong class="font-bold text-rose-300 block text-xs">No se puede a\u00F1adir el archivo porque no cumple con los requisitos:</strong>
+                    <p class="text-[11px] text-rose-200 mt-1 leading-relaxed" id="alert-logo-error-msg"></p>
+                  </div>
+                </div>
+                <button type="button" class="btn-dismiss-alert text-rose-400 hover:text-white text-sm font-bold cursor-pointer px-1.5 leading-none" data-target="alert-logo-error">\u2715</button>
+              </div>
+            </div>
+
+            <!-- Quick Selection Library: Saved Logos -->
+            <div class="mt-3 pt-3 border-t border-zinc-800/80 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>\uD83D\uDCBE</span> Logos Guardados (Selecci\u00F3n R\u00E1pida):
+                </span>
+                <span class="text-[9px] text-zinc-500 font-mono">Disponibles para futuras ediciones</span>
+              </div>
+              <div id="quick-saved-logo-list" class="flex flex-wrap gap-2 items-center"></div>
+            </div>
+
             <div class="pt-2 border-t border-zinc-800/80">
               <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">Logos de Muestra R\u00E1pidos</span>
               <div class="flex flex-wrap gap-2">
@@ -529,6 +554,26 @@ export function renderCardBuilder(businessId) {
                     </div>
                   </div>
 
+                  <!-- Red Error Alert Container for Stamp Completed -->
+                  <div id="alert-stamp_completed-error" class="hidden mt-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-200 text-xs space-y-1 animate-fade-in">
+                    <div class="flex items-start justify-between gap-1.5">
+                      <div class="flex items-start gap-2">
+                        <span class="text-rose-400 text-sm leading-none shrink-0 mt-0.5">\u26A0\uFE0F</span>
+                        <div>
+                          <strong class="font-bold text-rose-300 block text-[11px]">No se puede a\u00F1adir el archivo:</strong>
+                          <p class="text-[10px] text-rose-200 mt-0.5 leading-relaxed" id="alert-stamp_completed-error-msg"></p>
+                        </div>
+                      </div>
+                      <button type="button" class="btn-dismiss-alert text-rose-400 hover:text-white text-xs font-bold px-1" data-target="alert-stamp_completed-error">\u2715</button>
+                    </div>
+                  </div>
+
+                  <!-- Quick Selection Library: Saved Completed Stamps -->
+                  <div class="pt-2 border-t border-zinc-800/80 space-y-1">
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Sellos Activos Guardados:</span>
+                    <div id="quick-saved-stamp_completed-list" class="flex flex-wrap gap-1.5 items-center"></div>
+                  </div>
+
                   <!-- Fast Sample Completed Stamps -->
                   <div class="pt-2 border-t border-zinc-800/80">
                     <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Muestras Sello Activo:</span>
@@ -582,6 +627,26 @@ export function renderCardBuilder(businessId) {
                         <input type="url" id="input-stamp-uncompleted-url" value="${currentBranding.stamp_uncompleted_image && !currentBranding.stamp_uncompleted_image.startsWith('data:') ? currentBranding.stamp_uncompleted_image : ''}" placeholder="O pegar enlace URL..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-mono">
                       </div>
                     </div>
+                  </div>
+
+                  <!-- Red Error Alert Container for Stamp Uncompleted -->
+                  <div id="alert-stamp_uncompleted-error" class="hidden mt-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-200 text-xs space-y-1 animate-fade-in">
+                    <div class="flex items-start justify-between gap-1.5">
+                      <div class="flex items-start gap-2">
+                        <span class="text-rose-400 text-sm leading-none shrink-0 mt-0.5">\u26A0\uFE0F</span>
+                        <div>
+                          <strong class="font-bold text-rose-300 block text-[11px]">No se puede a\u00F1adir el archivo:</strong>
+                          <p class="text-[10px] text-rose-200 mt-0.5 leading-relaxed" id="alert-stamp_uncompleted-error-msg"></p>
+                        </div>
+                      </div>
+                      <button type="button" class="btn-dismiss-alert text-rose-400 hover:text-white text-xs font-bold px-1" data-target="alert-stamp_uncompleted-error">\u2715</button>
+                    </div>
+                  </div>
+
+                  <!-- Quick Selection Library: Saved Uncompleted Stamps -->
+                  <div class="pt-2 border-t border-zinc-800/80 space-y-1">
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Sellos Vac\u00EDos Guardados:</span>
+                    <div id="quick-saved-stamp_uncompleted-list" class="flex flex-wrap gap-1.5 items-center"></div>
                   </div>
 
                   <!-- Fast Sample Uncompleted Stamps -->
@@ -751,9 +816,8 @@ export function renderCardBuilder(businessId) {
                   <span>\uD83C\uDFDE\uFE0F</span> 3. Imagen de Fondo / Banner Central (Hero Image)
                 </h2>
                 <p class="text-[11px] text-zinc-400 mt-0.5">La franja visual que aparece en el centro de Apple y Google Wallet.</p>
-              </div>
-              <span class="text-[10px] font-extrabold ${currentBranding.bg_image_url ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border">
-                ${currentBranding.bg_image_url ? 'Banner Personalizado' : 'Franja Automática'}
+              </div>              <span id="badge-banner-status" class="text-[10px] font-extrabold ${currentBranding.bg_image_url ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border">
+                ${currentBranding.bg_image_url ? 'Banner Personalizado' : 'Franja Autom\u00E1tica'}
               </span>
             </div>
 
@@ -763,8 +827,8 @@ export function renderCardBuilder(businessId) {
                 <span>\uD83D\uDCD0</span> Especificaciones oficiales de Banner para Wallet:
               </div>
               <ul class="list-disc list-inside text-[11px] space-y-1 text-zinc-300">
-                <li><strong>Modo Automático (Recomendado):</strong> Nuestro servidor genera la franja exacta en ratio 3:1 con las cajas de sellos o saldo de puntos y el icono de premio.</li>
-                <li><strong>Banner Personalizado:</strong> Si subes tu propia imagen, debe tener una <strong>proporción 3:1 horizontal</strong> (tamaño exacto: <code>1032 x 336 px</code> o <code>1125 x 432 px</code>). <em>(Si subes una foto vertical o cuadrada, el móvil la recortará por el centro).</em></li>
+                <li><strong>Modo Autom\u00E1tico (Recomendado):</strong> Nuestro servidor genera la franja exacta en ratio 3:1 con las cajas de sellos o saldo de puntos y el icono de premio.</li>
+                <li><strong>Banner Personalizado:</strong> Si subes tu propia imagen, debe tener una <strong>proporci\u00F3n 3:1 horizontal</strong> (tama\u00F1o exacto: <code>1032 x 336 px</code> o <code>1125 x 432 px</code>). <em>(Si subes una foto vertical o cuadrada, el m\u00F3vil la recortar\u00E1 por el centro).</em></li>
               </ul>
             </div>
 
@@ -774,15 +838,13 @@ export function renderCardBuilder(businessId) {
                 <span class="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
                   <span>\uD83D\uDDBC\uFE0F</span> Banner Personalizado (Opcional - Ratio 3:1)
                 </span>
-                ${currentBranding.bg_image_url ? `
-                  <button type="button" id="btn-clear-bg-banner" class="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
-                    <span>\u2715</span> Usar Franja Automática
-                  </button>
-                ` : ''}
+                <button type="button" id="btn-clear-bg-banner" class="${currentBranding.bg_image_url ? '' : 'hidden'} text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
+                  <span>\u2715</span> Usar Franja Autom\u00E1tica
+                </button>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                <div class="sm:col-span-4 h-24 rounded-2xl border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-1.5 relative">
+                <div id="box-bg-banner-preview" class="sm:col-span-4 h-24 rounded-2xl border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-1.5 relative">
                   ${currentBranding.bg_image_url ? `
                     <img id="img-bg-banner-preview" src="${currentBranding.bg_image_url}" class="w-full h-full object-cover rounded-xl" alt="banner preview">
                     <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">3:1 Activo</span>
@@ -806,6 +868,42 @@ export function renderCardBuilder(businessId) {
                   </div>
 
                   <input type="url" id="input-bg-banner-url" value="${currentBranding.bg_image_url && !currentBranding.bg_image_url.startsWith('data:') ? currentBranding.bg_image_url : ''}" placeholder="O pegar enlace directo URL del Banner (https://...)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500 font-mono">
+                </div>
+              </div>
+
+              <!-- Red Error Alert Container for Banner -->
+              <div id="alert-banner-error" class="hidden mt-3 p-3.5 rounded-2xl bg-rose-500/10 border-2 border-rose-500/40 text-rose-200 text-xs space-y-1.5 animate-fade-in shadow-lg">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-start gap-2.5">
+                    <span class="text-rose-400 text-base leading-none shrink-0 mt-0.5">\u26A0\uFE0F</span>
+                    <div>
+                      <strong class="font-bold text-rose-300 block text-xs">No se puede a\u00F1adir el archivo porque no cumple con los requisitos:</strong>
+                      <p class="text-[11px] text-rose-200 mt-1 leading-relaxed" id="alert-banner-error-msg"></p>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-dismiss-alert text-rose-400 hover:text-white text-sm font-bold cursor-pointer px-1.5 leading-none" data-target="alert-banner-error">\u2715</button>
+                </div>
+              </div>
+
+              <!-- Quick Selection Library: Saved Banners -->
+              <div class="mt-3 pt-3 border-t border-zinc-800/80 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>\uD83D\uDCBE</span> Banners Guardados (Selecci\u00F3n R\u00E1pida):
+                  </span>
+                  <span class="text-[9px] text-zinc-500 font-mono">Disponibles para futuras ediciones</span>
+                </div>
+                <div id="quick-saved-banner-list" class="flex flex-wrap gap-2 items-center"></div>
+              </div>
+
+              <!-- Fast Preset Sample Banners -->
+              <div class="pt-2 border-t border-zinc-800/80">
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Banners de Muestra R\u00E1pida (3:1):</span>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2615</span> Caf\u00E9 Gourmet</button>
+                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2702\uFE0F</span> Barber\u00EDa</button>
+                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1550547660-d9450f859349?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83C\uDF54</span> Burger House</button>
+                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83C\uDF78</span> Cocteler\u00EDa</button>
                 </div>
               </div>
             </div>
@@ -1006,52 +1104,273 @@ export function renderCardBuilder(businessId) {
     updatePreview();
   }
 
-  function handleImageFile(file, callback) {
-    if (!file) return;
-    if (!file.type.match(/image.*/)) {
-      toast.error('Solo se permiten archivos de imagen (PNG, JPG, SVG, WebP)');
+  const UPLOAD_REQUIREMENTS = {
+    banner: {
+      label: 'Banner Horizontal 3:1',
+      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'],
+      maxSizeBytes: 5 * 1024 * 1024,
+      minWidth: 400,
+      minHeight: 100,
+      minRatio: 2.2,
+      maxRatio: 4.0,
+      targetRatioText: 'horizontal panor\u00E1mica 3:1 (aprox. 1032 x 336 px o 1125 x 432 px)'
+    },
+    logo: {
+      label: 'Logotipo del Comercio',
+      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'],
+      maxSizeBytes: 4 * 1024 * 1024,
+      minWidth: 48,
+      minHeight: 48,
+      minRatio: 0.35,
+      maxRatio: 2.8,
+      targetRatioText: 'cuadrada o est\u00E1ndar (aprox. 512 x 512 px)'
+    },
+    stamp_completed: {
+      label: 'Sello Completado (Activo)',
+      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'],
+      maxSizeBytes: 3 * 1024 * 1024,
+      minWidth: 24,
+      minHeight: 24,
+      minRatio: 0.65,
+      maxRatio: 1.55,
+      targetRatioText: 'cuadrada 1:1 con fondo transparente (aprox. 256 x 256 px)'
+    },
+    stamp_uncompleted: {
+      label: 'Sello Sin Completar (Vac\u00EDo)',
+      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'],
+      maxSizeBytes: 3 * 1024 * 1024,
+      minWidth: 24,
+      minHeight: 24,
+      minRatio: 0.65,
+      maxRatio: 1.55,
+      targetRatioText: 'cuadrada 1:1 con fondo transparente (aprox. 256 x 256 px)'
+    }
+  };
+
+  function showErrorNotice(category, title, detail) {
+    const alertEl = container.querySelector(`#alert-${category}-error`);
+    const textEl = container.querySelector(`#alert-${category}-error-msg`);
+    if (alertEl && textEl) {
+      textEl.innerHTML = `<strong>${title}:</strong> ${detail}`;
+      alertEl.classList.remove('hidden');
+      alertEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    toast.error(`Error en ${category}: ${title}`);
+  }
+
+  function clearErrorNotice(category) {
+    const alertEl = container.querySelector(`#alert-${category}-error`);
+    if (alertEl) alertEl.classList.add('hidden');
+  }
+
+  function getQuickFiles(category) {
+    try {
+      const key = `vynta_quick_${category}_${business?.id || 'default'}`;
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveQuickFile(category, url, name) {
+    if (!url) return;
+    try {
+      const key = `vynta_quick_${category}_${business?.id || 'default'}`;
+      let list = getQuickFiles(category);
+      list = list.filter(item => item.url !== url);
+      list.unshift({
+        id: 'qf_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        url,
+        name: name || (category === 'banner' ? 'Banner' : category === 'logo' ? 'Logo' : 'Sello'),
+        timestamp: Date.now()
+      });
+      list = list.slice(0, 8);
+      localStorage.setItem(key, JSON.stringify(list));
+      renderQuickFiles(category);
+    } catch (e) {
+      console.warn('Could not save quick file:', e);
+    }
+  }
+
+  function removeQuickFile(category, fileId) {
+    try {
+      const key = `vynta_quick_${category}_${business?.id || 'default'}`;
+      let list = getQuickFiles(category).filter(item => item.id !== fileId);
+      localStorage.setItem(key, JSON.stringify(list));
+      renderQuickFiles(category);
+    } catch (e) {
+      console.warn('Could not remove quick file:', e);
+    }
+  }
+
+  function renderQuickFiles(category) {
+    const containerEl = container.querySelector(`#quick-saved-${category}-list`);
+    if (!containerEl) return;
+    const files = getQuickFiles(category);
+
+    if (files.length === 0) {
+      containerEl.innerHTML = `
+        <span class="text-[10px] text-zinc-500 italic">No hay archivos guardados a\u00FAn. Al subir uno v\u00E1lido se guardar\u00E1 aqu\u00ED autom\u00E1ticamente.</span>
+      `;
       return;
     }
+
+    containerEl.innerHTML = files.map(f => `
+      <div class="group relative flex items-center gap-1.5 px-2 py-1 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-sky-500 transition shadow-sm">
+        <button type="button" class="btn-apply-quick-file flex items-center gap-1.5 text-left cursor-pointer" data-category="${category}" data-url="${f.url}" title="Hacer clic para aplicar">
+          <img src="${f.url}" class="${category === 'banner' ? 'w-10 h-3.5 object-cover' : 'w-5 h-5 object-contain'} rounded shrink-0 bg-black/40 border border-white/10" alt="thumb">
+          <span class="text-[10px] text-zinc-300 group-hover:text-white font-medium max-w-[85px] truncate">${f.name || 'Guardado'}</span>
+        </button>
+        <button type="button" class="btn-remove-quick-file text-zinc-500 hover:text-rose-400 text-xs font-bold px-1 transition cursor-pointer" data-category="${category}" data-id="${f.id}" title="Eliminar de guardados">\u2715</button>
+      </div>
+    `).join('');
+
+    containerEl.querySelectorAll('.btn-apply-quick-file').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const cat = btn.dataset.category;
+        const url = btn.dataset.url;
+        clearErrorNotice(cat);
+        if (cat === 'banner') {
+          applyBgBanner(url, btn.querySelector('span')?.textContent || 'Banner');
+          const input = container.querySelector('#input-bg-banner-url');
+          if (input) input.value = url.startsWith('data:') ? '' : url;
+        } else if (cat === 'logo') {
+          applyLogo(url, btn.querySelector('span')?.textContent || 'Logo');
+          const input = container.querySelector('#input-logo-url');
+          if (input) input.value = url.startsWith('data:') ? '' : url;
+        } else if (cat === 'stamp_completed') {
+          applyCompletedStamp(url, btn.querySelector('span')?.textContent || 'Sello Activo');
+          const input = container.querySelector('#input-stamp-completed-url');
+          if (input) input.value = url.startsWith('data:') ? '' : url;
+        } else if (cat === 'stamp_uncompleted') {
+          applyUncompletedStamp(url, btn.querySelector('span')?.textContent || 'Sello Vac\u00EDo');
+          const input = container.querySelector('#input-stamp-uncompleted-url');
+          if (input) input.value = url.startsWith('data:') ? '' : url;
+        }
+      });
+    });
+
+    containerEl.querySelectorAll('.btn-remove-quick-file').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const cat = btn.dataset.category;
+        const id = btn.dataset.id;
+        removeQuickFile(cat, id);
+        toast.info('Archivo eliminado de la lista r\u00E1pida');
+      });
+    });
+  }
+
+  function validateAndProcessImage(file, category, onValid) {
+    if (!file) return;
+    const reqs = UPLOAD_REQUIREMENTS[category];
+    if (!reqs) return onValid(file);
+
+    clearErrorNotice(category);
+
+    const fileType = (file.type || '').toLowerCase();
+    const fileName = (file.name || '').toLowerCase();
+    const isAllowedType = reqs.allowedTypes.some(t => fileType.includes(t) || fileName.endsWith(t.replace('image/', '.')));
+
+    if (!isAllowedType && !fileType.startsWith('image/')) {
+      showErrorNotice(
+        category,
+        'Formato no compatible',
+        `Has seleccionado "${file.name || 'archivo'}" (${fileType || 'desconocido'}). Solo se admiten formatos de imagen: PNG, JPG, JPEG, WebP${category === 'logo' || category.startsWith('stamp') ? ' o SVG' : ''}.`
+      );
+      return;
+    }
+
+    if (file.size > reqs.maxSizeBytes) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+      const maxMb = (reqs.maxSizeBytes / (1024 * 1024)).toFixed(0);
+      showErrorNotice(
+        category,
+        'Tama\u00F1o de archivo excedido',
+        `El archivo pesa ${sizeMb} MB y el l\u00EDmite permitido es de ${maxMb} MB. Por favor optimiza o reduce el peso de la imagen antes de subirla.`
+      );
+      return;
+    }
+
     const reader = new FileReader();
+    reader.onerror = () => {
+      showErrorNotice(category, 'Error de lectura', 'El navegador no pudo procesar este archivo.');
+    };
     reader.onload = (e) => {
       const rawDataUrl = e.target.result;
+
+      if (fileType.includes('svg') || fileName.endsWith('.svg')) {
+        clearErrorNotice(category);
+        onValid(rawDataUrl, file.name);
+        return;
+      }
+
       const img = new Image();
+      img.onerror = () => {
+        showErrorNotice(category, 'Imagen inv\u00E1lida o corrupta', 'No se ha podido interpretar el archivo de imagen.');
+      };
       img.onload = () => {
+        const width = img.naturalWidth || img.width;
+        const height = img.naturalHeight || img.height;
+        const ratio = width / Math.max(1, height);
+
+        if (reqs.minRatio && (ratio < reqs.minRatio || ratio > reqs.maxRatio)) {
+          showErrorNotice(
+            category,
+            'Proporci\u00F3n de imagen no v\u00E1lida',
+            `La imagen subida mide ${width} x ${height} px (proporci\u00F3n ${ratio.toFixed(2)}:1). Para este apartado se requiere una proporci\u00F3n ${reqs.targetRatioText}.`
+          );
+          return;
+        }
+
+        if (width < reqs.minWidth || height < reqs.minHeight) {
+          showErrorNotice(
+            category,
+            'Resoluci\u00F3n insuficiente',
+            `La imagen mide ${width} x ${height} px. La resoluci\u00F3n m\u00EDnima requerida es de ${reqs.minWidth} x ${reqs.minHeight} px para garantizar nitidez.`
+          );
+          return;
+        }
+
         try {
           const canvas = document.createElement('canvas');
-          const maxDim = 800;
-          let width = img.width;
-          let height = img.height;
-          if (width > height) {
-            if (width > maxDim) {
-              height = Math.round((height * maxDim) / width);
-              width = maxDim;
-            }
-          } else {
-            if (height > maxDim) {
-              width = Math.round((width * maxDim) / height);
-              height = maxDim;
-            }
+          const maxW = category === 'banner' ? 1200 : 512;
+          let targetW = width;
+          let targetH = height;
+          if (targetW > maxW) {
+            targetH = Math.round((targetH * maxW) / targetW);
+            targetW = maxW;
           }
-          canvas.width = Math.max(1, width);
-          canvas.height = Math.max(1, height);
+          canvas.width = targetW;
+          canvas.height = targetH;
           const ctx = canvas.getContext('2d');
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const isJpeg = file.type && (file.type.includes('jpeg') || file.type.includes('jpg'));
-          const outputType = isJpeg ? 'image/jpeg' : 'image/png';
-          callback(canvas.toDataURL(outputType, 0.95));
+          ctx.clearRect(0, 0, targetW, targetH);
+          ctx.drawImage(img, 0, 0, targetW, targetH);
+
+          const isJpeg = fileType.includes('jpeg') || fileType.includes('jpg');
+          const outputFormat = isJpeg ? 'image/jpeg' : 'image/png';
+          const optimizedDataUrl = canvas.toDataURL(outputFormat, 0.92);
+
+          clearErrorNotice(category);
+          onValid(optimizedDataUrl, file.name);
         } catch (err) {
-          callback(rawDataUrl);
+          clearErrorNotice(category);
+          onValid(rawDataUrl, file.name);
         }
       };
-      img.onerror = () => callback(rawDataUrl);
       img.src = rawDataUrl;
     };
-    reader.onerror = () => toast.error('Error al leer el archivo de imagen.');
     reader.readAsDataURL(file);
+  }
+
+  function handleImageFile(file, callback) {
+    validateAndProcessImage(file, 'banner', callback);
   }
 
   function bindEvents() {
@@ -1276,12 +1595,22 @@ export function renderCardBuilder(businessId) {
     const inputLogoUrl = container.querySelector('#input-logo-url');
     const imgLogoPreview = container.querySelector('#img-logo-preview');
 
-    function applyLogo(imageUrl) {
+    function applyLogo(imageUrl, fileName = 'Logotipo') {
       if (!imageUrl) return;
       currentLogoUrl = imageUrl;
+      if (business) business.logo_url = imageUrl;
       if (imgLogoPreview) imgLogoPreview.src = imageUrl;
       if (inputLogoUrl) inputLogoUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
+
+      // Auto-save to business storage
+      if (business?.id) {
+        businessService.update(business.id, { logo_url: imageUrl }, session);
+      }
+
+      saveQuickFile('logo', imageUrl, fileName);
+      clearErrorNotice('logo');
       updatePreview();
+      toast.success('\u00A1Logotipo guardado y aplicado a la tarjeta!');
     }
 
     if (btnTriggerLogo && fileLogoUpload) {
@@ -1319,9 +1648,8 @@ export function renderCardBuilder(businessId) {
         dropzoneLogo.classList.remove('border-sky-500', 'bg-sky-500/10');
         const files = e.dataTransfer && e.dataTransfer.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
-            applyLogo(dataUrl);
-            toast.success('\u00A1Logotipo subido y aplicado!');
+          validateAndProcessImage(files[0], 'logo', (dataUrl, fileName) => {
+            applyLogo(dataUrl, fileName);
           });
         }
       };
@@ -1329,9 +1657,8 @@ export function renderCardBuilder(businessId) {
       fileLogoUpload.onchange = (e) => {
         const files = e.target.files || fileLogoUpload.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
-            applyLogo(dataUrl);
-            toast.success('\u00A1Logotipo subido y aplicado!');
+          validateAndProcessImage(files[0], 'logo', (dataUrl, fileName) => {
+            applyLogo(dataUrl, fileName);
           });
         }
       };
@@ -1340,15 +1667,19 @@ export function renderCardBuilder(businessId) {
     if (inputLogoUrl) {
       inputLogoUrl.addEventListener('input', (e) => {
         const val = e.target.value.trim();
-        if (val) applyLogo(val);
+        if (val) {
+          clearErrorNotice('logo');
+          applyLogo(val, 'Logo URL');
+        }
       });
     }
 
     container.querySelectorAll('.btn-sample-logo').forEach(btn => {
       btn.addEventListener('click', () => {
         const logoUrl = btn.dataset.sampleLogo;
-        applyLogo(logoUrl);
-        toast.success('Logotipo de muestra seleccionado');
+        const name = btn.textContent.trim();
+        clearErrorNotice('logo');
+        applyLogo(logoUrl, name);
       });
     });
 
@@ -1384,7 +1715,7 @@ export function renderCardBuilder(businessId) {
       }
     }
 
-    function applyCompletedStamp(imageUrl) {
+    function applyCompletedStamp(imageUrl, fileName = 'Sello Activo') {
       if (!imageUrl) return;
       currentBranding.stamp_completed_image = imageUrl;
       currentBranding.stamp_custom_image = imageUrl;
@@ -1401,12 +1732,20 @@ export function renderCardBuilder(businessId) {
         b.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
       });
 
+      // Auto-save to activeProgram in storage
+      if (activeProgram?.id) {
+        activeProgram.branding = { ...currentBranding };
+        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
+      }
+
+      saveQuickFile('stamp_completed', imageUrl, fileName);
+      clearErrorNotice('stamp_completed');
       updateStampBadge();
       updatePreview();
-      toast.success('\u00A1Foto de sello completado aplicada!');
+      toast.success('\u00A1Foto de sello completado guardada y aplicada!');
     }
 
-    function applyUncompletedStamp(imageUrl) {
+    function applyUncompletedStamp(imageUrl, fileName = 'Sello Vac\u00EDo') {
       if (!imageUrl) return;
       currentBranding.stamp_uncompleted_image = imageUrl;
 
@@ -1417,9 +1756,17 @@ export function renderCardBuilder(businessId) {
         `;
       }
 
+      // Auto-save to activeProgram in storage
+      if (activeProgram?.id) {
+        activeProgram.branding = { ...currentBranding };
+        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
+      }
+
+      saveQuickFile('stamp_uncompleted', imageUrl, fileName);
+      clearErrorNotice('stamp_uncompleted');
       updateStampBadge();
       updatePreview();
-      toast.success('\u00A1Foto de sello sin completar aplicada!');
+      toast.success('\u00A1Foto de sello sin completar guardada y aplicada!');
     }
 
     // --- COMPLETED STAMP LISTENERS ---
@@ -1458,9 +1805,9 @@ export function renderCardBuilder(businessId) {
         dropzoneStampCompleted.classList.remove('border-amber-400', 'bg-amber-500/20');
         const files = e.dataTransfer && e.dataTransfer.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
+          validateAndProcessImage(files[0], 'stamp_completed', (dataUrl, fileName) => {
             if (inputStampCompletedUrl) inputStampCompletedUrl.value = '';
-            applyCompletedStamp(dataUrl);
+            applyCompletedStamp(dataUrl, fileName);
           });
         }
       };
@@ -1468,9 +1815,9 @@ export function renderCardBuilder(businessId) {
       fileStampCompletedUpload.onchange = (e) => {
         const files = e.target.files || fileStampCompletedUpload.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
+          validateAndProcessImage(files[0], 'stamp_completed', (dataUrl, fileName) => {
             if (inputStampCompletedUrl) inputStampCompletedUrl.value = '';
-            applyCompletedStamp(dataUrl);
+            applyCompletedStamp(dataUrl, fileName);
           });
         }
       };
@@ -1479,15 +1826,20 @@ export function renderCardBuilder(businessId) {
     if (inputStampCompletedUrl) {
       inputStampCompletedUrl.addEventListener('input', (e) => {
         const val = e.target.value.trim();
-        if (val) applyCompletedStamp(val);
+        if (val) {
+          clearErrorNotice('stamp_completed');
+          applyCompletedStamp(val, 'Sello URL');
+        }
       });
     }
 
     container.querySelectorAll('.btn-sample-stamp-completed').forEach(btn => {
       btn.addEventListener('click', () => {
         const stampUrl = btn.dataset.sampleCompleted;
+        const name = btn.textContent.trim();
+        clearErrorNotice('stamp_completed');
         if (inputStampCompletedUrl) inputStampCompletedUrl.value = stampUrl;
-        applyCompletedStamp(stampUrl);
+        applyCompletedStamp(stampUrl, name);
       });
     });
 
@@ -1505,6 +1857,11 @@ export function renderCardBuilder(businessId) {
             <span class="text-[9px] text-zinc-500 font-bold mt-1">Sin Imagen</span>
           `;
         }
+        if (activeProgram?.id) {
+          activeProgram.branding = { ...currentBranding };
+          loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
+        }
+        clearErrorNotice('stamp_completed');
         updateStampBadge();
         updatePreview();
         toast.success('Foto de sello completado eliminada');
@@ -1547,9 +1904,9 @@ export function renderCardBuilder(businessId) {
         dropzoneStampUncompleted.classList.remove('border-zinc-500', 'bg-zinc-800/80');
         const files = e.dataTransfer && e.dataTransfer.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
+          validateAndProcessImage(files[0], 'stamp_uncompleted', (dataUrl, fileName) => {
             if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
-            applyUncompletedStamp(dataUrl);
+            applyUncompletedStamp(dataUrl, fileName);
           });
         }
       };
@@ -1557,9 +1914,9 @@ export function renderCardBuilder(businessId) {
       fileStampUncompletedUpload.onchange = (e) => {
         const files = e.target.files || fileStampUncompletedUpload.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
+          validateAndProcessImage(files[0], 'stamp_uncompleted', (dataUrl, fileName) => {
             if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
-            applyUncompletedStamp(dataUrl);
+            applyUncompletedStamp(dataUrl, fileName);
           });
         }
       };
@@ -1568,15 +1925,20 @@ export function renderCardBuilder(businessId) {
     if (inputStampUncompletedUrl) {
       inputStampUncompletedUrl.addEventListener('input', (e) => {
         const val = e.target.value.trim();
-        if (val) applyUncompletedStamp(val);
+        if (val) {
+          clearErrorNotice('stamp_uncompleted');
+          applyUncompletedStamp(val, 'Sello Vac\u00EDo URL');
+        }
       });
     }
 
     container.querySelectorAll('.btn-sample-stamp-uncompleted, .btn-sample-uncompleted').forEach(btn => {
       btn.addEventListener('click', () => {
         const stampUrl = btn.dataset.sampleUncompleted;
+        const name = btn.textContent.trim();
+        clearErrorNotice('stamp_uncompleted');
         if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = stampUrl;
-        applyUncompletedStamp(stampUrl);
+        applyUncompletedStamp(stampUrl, name);
       });
     });
 
@@ -1590,6 +1952,11 @@ export function renderCardBuilder(businessId) {
             <span class="text-[9px] text-zinc-500 font-bold mt-1">Silueta Tenue</span>
           `;
         }
+        if (activeProgram?.id) {
+          activeProgram.branding = { ...currentBranding };
+          loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
+        }
+        clearErrorNotice('stamp_uncompleted');
         updateStampBadge();
         updatePreview();
         toast.success('Foto de sello sin completar eliminada');
@@ -1740,15 +2107,56 @@ export function renderCardBuilder(businessId) {
     const inputBgBannerUrl = container.querySelector('#input-bg-banner-url');
     const btnClearBgBanner = container.querySelector('#btn-clear-bg-banner');
 
-    function applyBgBanner(imageUrl) {
+    function applyBgBanner(imageUrl, fileName = 'Banner 3:1') {
       currentBranding.bg_image_url = imageUrl || null;
-      renderForm();
-      updatePreview();
+
+      const boxPreview = container.querySelector('#box-bg-banner-preview');
+      const badgeStatus = container.querySelector('#badge-banner-status');
+      const btnClear = container.querySelector('#btn-clear-bg-banner');
+      const inputUrl = container.querySelector('#input-bg-banner-url');
+
+      if (boxPreview) {
+        if (imageUrl) {
+          boxPreview.innerHTML = `
+            <img id="img-bg-banner-preview" src="${imageUrl}" class="w-full h-full object-cover rounded-xl" alt="banner preview">
+            <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">3:1 Activo</span>
+          `;
+        } else {
+          boxPreview.innerHTML = `
+            <span class="text-lg text-sky-400 font-bold">\u2728</span>
+            <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (3:1)</span>
+          `;
+        }
+      }
+
+      if (badgeStatus) {
+        badgeStatus.className = `text-[10px] font-extrabold ${imageUrl ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border`;
+        badgeStatus.textContent = imageUrl ? 'Banner Personalizado' : 'Franja Autom\u00E1tica';
+      }
+
+      if (btnClear) {
+        btnClear.classList.toggle('hidden', !imageUrl);
+      }
+
+      if (inputUrl && !imageUrl) {
+        inputUrl.value = '';
+      }
+
+      // Auto-save to activeProgram in storage so it stays saved
+      if (activeProgram?.id) {
+        activeProgram.branding = { ...currentBranding };
+        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
+      }
+
       if (imageUrl) {
-        toast.success('\u00A1Banner horizontal 3:1 aplicado a la tarjeta!');
+        saveQuickFile('banner', imageUrl, fileName);
+        toast.success('\u00A1Banner horizontal 3:1 guardado y aplicado!');
       } else {
         toast.success('Franja autom\u00E1tica del servidor restaurada.');
       }
+
+      clearErrorNotice('banner');
+      updatePreview();
     }
 
     if (btnTriggerBgBanner && fileCardBgUpload) {
@@ -1786,8 +2194,9 @@ export function renderCardBuilder(businessId) {
         dropzoneBgBanner.classList.remove('border-sky-500', 'bg-sky-500/10');
         const files = e.dataTransfer && e.dataTransfer.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
-            applyBgBanner(dataUrl);
+          validateAndProcessImage(files[0], 'banner', (dataUrl, fileName) => {
+            if (inputBgBannerUrl) inputBgBannerUrl.value = '';
+            applyBgBanner(dataUrl, fileName);
           });
         }
       };
@@ -1795,8 +2204,9 @@ export function renderCardBuilder(businessId) {
       fileCardBgUpload.onchange = (e) => {
         const files = e.target.files || fileCardBgUpload.files;
         if (files && files.length > 0) {
-          handleImageFile(files[0], (dataUrl) => {
-            applyBgBanner(dataUrl);
+          validateAndProcessImage(files[0], 'banner', (dataUrl, fileName) => {
+            if (inputBgBannerUrl) inputBgBannerUrl.value = '';
+            applyBgBanner(dataUrl, fileName);
           });
         }
       };
@@ -1806,14 +2216,25 @@ export function renderCardBuilder(businessId) {
       inputBgBannerUrl.addEventListener('input', (e) => {
         const val = e.target.value.trim();
         if (val) {
-          currentBranding.bg_image_url = val;
-          updatePreview();
+          clearErrorNotice('banner');
+          applyBgBanner(val, 'Banner URL');
         }
       });
     }
 
+    container.querySelectorAll('.btn-sample-banner').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sampleUrl = btn.dataset.sampleBanner;
+        const name = btn.textContent.trim();
+        clearErrorNotice('banner');
+        if (inputBgBannerUrl) inputBgBannerUrl.value = sampleUrl;
+        applyBgBanner(sampleUrl, name);
+      });
+    });
+
     if (btnClearBgBanner) {
       btnClearBgBanner.addEventListener('click', () => {
+        clearErrorNotice('banner');
         applyBgBanner(null);
       });
     }
@@ -1950,6 +2371,18 @@ export function renderCardBuilder(businessId) {
         toast.success(`\u00A1Tarjeta "${cardName}" guardada correctamente!`);
       });
     }
+
+    // Render Quick Selection libraries for all categories
+    ['logo', 'stamp_completed', 'stamp_uncompleted', 'banner'].forEach(cat => renderQuickFiles(cat));
+
+    // Wire error alert dismiss buttons
+    container.querySelectorAll('.btn-dismiss-alert').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        const el = container.querySelector('#' + target);
+        if (el) el.classList.add('hidden');
+      });
+    });
   }
 
   renderForm();
