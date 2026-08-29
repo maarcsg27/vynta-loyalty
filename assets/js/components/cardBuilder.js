@@ -1482,18 +1482,6 @@ export function renderCardBuilder(businessId) {
     }
 
     // --- CHARACTER COUNTERS & SHORT TEXT VALIDATION ---
-    const charCountCardName = container.querySelector('#char-count-card-name');
-    if (inputCardTitleName && charCountCardName) {
-      inputCardTitleName.addEventListener('input', () => {
-        const len = inputCardTitleName.value.length;
-        charCountCardName.textContent = `${len} / 25 car.`;
-        if (len > 25) {
-          charCountCardName.className = 'text-[10px] font-mono text-amber-400 font-bold';
-        } else {
-          charCountCardName.className = 'text-[10px] font-mono text-zinc-400 font-bold';
-        }
-      });
-    }
 
     const charCountRewardName = container.querySelector('#char-count-reward-name');
     const rewardInput = container.querySelector('#input-reward-name');
