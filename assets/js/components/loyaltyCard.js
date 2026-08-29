@@ -465,6 +465,11 @@ export function renderAppleWalletPassHTML({
 
         <!-- Pass Strip / Visual Hero -->
         <div class="p-4 space-y-3 relative">
+          ${branding.bg_image_url ? `
+            <div class="w-full aspect-[3/1] rounded-2xl overflow-hidden mb-3 border border-white/20 shadow-md bg-black/40">
+              <img src="${branding.bg_image_url}" alt="Banner 3:1" class="w-full h-full object-cover">
+            </div>
+          ` : ''}
           ${heroContentHtml}
         </div>
 
@@ -640,6 +645,11 @@ export function renderGoogleWalletPassHTML({
 
         <!-- Google Loyalty Hero Section -->
         <div class="p-5 space-y-4">
+          ${branding.bg_image_url ? `
+            <div class="w-full aspect-[3/1] rounded-2xl overflow-hidden border border-white/10 shadow bg-black/40">
+              <img src="${branding.bg_image_url}" alt="Banner Hero 3:1" class="w-full h-full object-cover">
+            </div>
+          ` : ''}
           <div class="space-y-1">
             <span class="text-[10px] font-bold uppercase tracking-wider" style="color: ${primaryColor}">
               Recompensa

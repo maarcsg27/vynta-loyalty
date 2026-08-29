@@ -229,19 +229,19 @@ export default async function handler(req, res) {
   const numPoints = Math.max(0, parseInt(points, 10) || 0);
   const numMaxPoints = Math.max(1, parseInt(maxPoints, 10) || 100);
 
-  const width = 750;
+  const width = 900;
   const height = 300;
   const buf = Buffer.alloc(width * height * 4);
 
   const bgRgb = hexToRgb(bg);
   const primRgb = hexToRgb(color);
 
-  // 1. Dark Gradient Background
+  // 1. Solid Dark Background matching Wallet Pass
   for (let y = 0; y < height; y++) {
     const factor = y / height;
-    const r = Math.round(bgRgb[0] * (1 - factor * 0.4));
-    const g = Math.round(bgRgb[1] * (1 - factor * 0.4));
-    const b = Math.round(bgRgb[2] * (1 - factor * 0.4));
+    const r = Math.round(bgRgb[0] * (1 - factor * 0.35));
+    const g = Math.round(bgRgb[1] * (1 - factor * 0.35));
+    const b = Math.round(bgRgb[2] * (1 - factor * 0.35));
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * 4;
       buf[idx] = r;
@@ -252,13 +252,13 @@ export default async function handler(req, res) {
   }
 
   if (type === 'points') {
-    drawText(buf, width, height, 'PUNTOS ACUMULADOS', 240, 40, 3, primRgb);
-    drawText(buf, width, height, `${numPoints} PTS`, 300, 95, 6, [255, 255, 255]);
+    drawText(buf, width, height, 'PUNTOS ACUMULADOS', 315, 38, 3, primRgb);
+    drawText(buf, width, height, `${numPoints} PTS`, 375, 95, 6, [255, 255, 255]);
 
-    const barW = 520;
-    const barH = 22;
-    const startX = 115;
-    const startY = 175;
+    const barW = 600;
+    const barH = 26;
+    const startX = 150;
+    const startY = 170;
     const pct = Math.min(100, Math.round((numPoints / numMaxPoints) * 100));
     const fillW = Math.max(16, Math.round((barW * pct) / 100));
 
@@ -271,14 +271,14 @@ export default async function handler(req, res) {
       }
     }
 
-    drawText(buf, width, height, `META: ${numMaxPoints} PTS`, 280, 230, 3, [245, 158, 11]);
+    drawText(buf, width, height, `META: ${numMaxPoints} PTS`, 355, 225, 3, [245, 158, 11]);
   } else {
-    // 2. Exact Grid Dimensions for 2 rows of 5 rounded square boxes (Photo 2)
+    // 2. Exact 3:1 Grid Dimensions for 2 rows of 5 rounded square boxes
     const cols = 5;
-    const boxW = 124;
-    const boxH = 118;
-    const gapX = 16;
-    const gapY = 16;
+    const boxW = 136;
+    const boxH = 116;
+    const gapX = 20;
+    const gapY = 18;
     const totalW = cols * boxW + (cols - 1) * gapX;
     const startX = Math.round((width - totalW) / 2);
     const startY = 24;

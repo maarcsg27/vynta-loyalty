@@ -284,7 +284,7 @@ export function renderCardBuilder(businessId) {
                       <label for="input-card-title-name" class="block text-[11px] font-bold text-zinc-300">Nombre de la Tarjeta:</label>
                       <span id="char-count-card-name" class="text-[10px] font-mono text-zinc-400 font-bold">${cardName.length} / 25 car.</span>
                     </div>
-                    <input type="text" id="input-card-title-name" maxlength="35" value="${cardName}" placeholder="Nombre de esta tarjeta..." class="w-full bg-zinc-900/90 border border-zinc-700 hover:border-zinc-600 ${barTheme.focusBorder} rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition">
+                    <input type="text" id="input-card-title-name" maxlength="25" value="${cardName}" placeholder="Nombre de esta tarjeta..." class="w-full bg-zinc-900/90 border border-zinc-700 hover:border-zinc-600 ${barTheme.focusBorder} rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition">
                     <p class="text-[10px] text-zinc-400">Recomendado máx. 25 caracteres para evitar cortes en la pantalla del móvil.</p>
                   </div>
                 </div>
@@ -384,7 +384,7 @@ export function renderCardBuilder(businessId) {
                     <label class="block text-xs font-bold text-zinc-300">Beneficio / Premio de Bienvenida *</label>
                     <span id="char-count-promo-benefit" class="text-[10px] font-mono text-zinc-400 font-bold">${promoBenefit.length} / 30 car.</span>
                   </div>
-                  <input type="text" id="input-promo-benefit" maxlength="40" value="${promoBenefit}" placeholder="Ej: 1 Bebida Gratis, 15\u20AC DTO Bienvenida" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                  <input type="text" id="input-promo-benefit" maxlength="30" value="${promoBenefit}" placeholder="Ej: 1 Bebida Gratis, 15\u20AC DTO Bienvenida" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
@@ -570,7 +570,7 @@ export function renderCardBuilder(businessId) {
                     <label class="block text-xs font-bold text-zinc-300">Nombre del Premio / Recompensa *</label>
                     <span id="char-count-reward-name" class="text-[10px] font-mono text-zinc-400 font-bold">${rewardName.length} / 30 car.</span>
                   </div>
-                  <input type="text" id="input-reward-name" maxlength="35" value="${rewardName}" placeholder="Ej: 1 Caf\u00E9 Gratis + Tarta" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                  <input type="text" id="input-reward-name" maxlength="30" value="${rewardName}" placeholder="Ej: 1 Caf\u00E9 Gratis + Tarta" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -626,7 +626,7 @@ export function renderCardBuilder(businessId) {
                     <label class="block text-xs font-bold text-zinc-300">Nombre del Premio / Recompensa al alcanzar la Meta *</label>
                     <span id="char-count-reward-name" class="text-[10px] font-mono text-zinc-400 font-bold">${rewardName.length} / 30 car.</span>
                   </div>
-                  <input type="text" id="input-reward-name" maxlength="35" value="${rewardName}" placeholder="Ej: 10\u20AC de Descuento, Men\u00FA Especial Gratis" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
+                  <input type="text" id="input-reward-name" maxlength="30" value="${rewardName}" placeholder="Ej: 10\u20AC de Descuento, Men\u00FA Especial Gratis" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -1008,10 +1008,16 @@ export function renderCardBuilder(businessId) {
 
     // --- CARD TITLE INPUT ---
     const inputCardTitleName = container.querySelector('#input-card-title-name');
+    const charCountCardName = container.querySelector('#char-count-card-name');
     if (inputCardTitleName) {
       inputCardTitleName.addEventListener('input', (e) => {
         cardName = e.target.value.trim() || 'Tarjeta Digital';
         activeProgram.name = cardName;
+        if (charCountCardName) {
+          const len = e.target.value.length;
+          charCountCardName.textContent = `${len} / 25 car.`;
+          charCountCardName.className = len >= 25 ? 'text-[10px] font-mono text-amber-400 font-bold' : 'text-[10px] font-mono text-zinc-400 font-bold';
+        }
         updatePreview();
       });
     }
