@@ -9,14 +9,6 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  // Network-First: Always fetch newest code from Vercel edge CDN
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        return networkResponse;
-      })
-      .catch(() => caches.match(event.request))
-  );
+self.addEventListener('fetch', () => {
+  // Let network handle all requests directly
 });

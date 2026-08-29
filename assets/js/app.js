@@ -15,7 +15,7 @@ import { renderCustomerPortalView } from './views/customerPortalView.js';
 
 class AppRouter {
   constructor() {
-    this.appRoot = document.getElementById('app');
+    this.appRoot = document.getElementById('app') || document.body;
     
     // Initialize Theme (Modo Día / Noche)
     const savedTheme = localStorage.getItem('vynta_theme') || 'dark';
@@ -27,20 +27,23 @@ class AppRouter {
       document.documentElement.classList.remove('light');
     }
 
-    // Initialize real-time cross-device cloud sync
-    syncService.init();
+    // Initialize real-time cross-device cloud sync safely
+    try {
+      syncService.init();
+    } catch (e) {
+      console.warn('SyncService init error:', e);
+    }
 
     window.addEventListener('hashchange', () => {
-      syncService.pullFromCloud();
+      try { syncService.pullFromCloud(); } catch(e) {}
       this.handleRoute();
     });
-    window.addEventListener('DOMContentLoaded', () => {
-      syncService.pullFromCloud();
-      this.handleRoute();
-    });
+
     window.addEventListener('focus', () => {
-      syncService.pullFromCloud();
-      syncService.fetchRecentEvents();
+      try {
+        syncService.pullFromCloud();
+        syncService.fetchRecentEvents();
+      } catch (e) {}
       const hash = window.location.hash || '';
       if (hash.startsWith('#/admin') || hash.startsWith('#/vynta') || hash === '#/login') {
         this.handleRoute();
@@ -53,10 +56,16 @@ class AppRouter {
         this.handleRoute();
       }
     });
+
+    // Execute route immediately so app renders right away!
+    this.handleRoute();
   }
 
   handleRoute() {
     try {
+      if (!this.appRoot) {
+        this.appRoot = document.getElementById('app') || document.body;
+      }
       const hash = window.location.hash || '#/login';
       this.appRoot.innerHTML = '';
 
@@ -175,12 +184,13 @@ class AppRouter {
   }
 }
 
+// Clean any existing Service Worker registrations to prevent caching issues
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then((reg) => {
-    reg.update().catch(() => {});
-  }).catch(err => {
-    console.log('SW registration skipped or unsupported in local env:', err);
-  });
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let r of registrations) {
+      r.unregister();
+    }
+  }).catch(() => {});
 }
 
 new AppRouter();
