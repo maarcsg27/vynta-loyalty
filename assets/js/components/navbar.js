@@ -45,13 +45,15 @@ export function renderNavbar(currentPath = '') {
 
       <!-- ON/OFF Day-Night Theme Switch (Between Logo and Business Dropdown) -->
       <div class="flex items-center pl-2 sm:pl-3 border-l border-zinc-800" title="Cambiar a Modo D\u00EDa / Noche">
-        <button type="button" id="btn-theme-toggle" aria-label="Cambiar Modo D\u00EDa/Noche" class="group relative inline-flex items-center h-7 w-[52px] rounded-full p-0.5 transition-all duration-300 focus:outline-none cursor-pointer select-none bg-zinc-900 border border-zinc-700 hover:border-sky-500/50 shadow-inner">
+        <button type="button" id="btn-theme-toggle" aria-label="Cambiar Modo D\u00EDa/Noche" class="group relative inline-flex items-center h-7 w-[54px] rounded-full p-0.5 transition-all duration-300 focus:outline-none cursor-pointer select-none bg-zinc-900 border border-zinc-700 hover:border-sky-500/60 shadow-inner">
           <span class="sr-only">Modo D\u00EDa/Noche</span>
-          <div class="w-full flex items-center justify-between px-1.5 pointer-events-none text-[10px] leading-none select-none">
+          <div class="w-full flex items-center justify-between px-1 pointer-events-none text-[9px] leading-none select-none opacity-40">
             <span>\uD83C\uDF19</span>
             <span>\u2600\uFE0F</span>
           </div>
-          <span id="theme-toggle-knob" class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out flex items-center justify-center bg-gradient-to-tr from-sky-400 to-indigo-500 text-white"></span>
+          <span id="theme-toggle-knob" class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out flex items-center justify-center bg-gradient-to-tr from-sky-400 to-indigo-500 text-white border border-sky-300/40">
+            <span class="text-[11px] leading-none select-none">\uD83C\uDF19</span>
+          </span>
         </button>
       </div>
 
@@ -163,13 +165,15 @@ export function renderNavbar(currentPath = '') {
   function updateThemeUI(isLight) {
     if (!btnThemeToggle || !knob) return;
     if (isLight) {
-      btnThemeToggle.className = 'group relative inline-flex items-center h-7 w-[52px] rounded-full p-0.5 transition-all duration-300 focus:outline-none cursor-pointer select-none bg-amber-100 border border-amber-300 hover:border-amber-400 shadow-inner';
-      knob.style.transform = 'translateX(24px)';
-      knob.className = 'absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out flex items-center justify-center bg-gradient-to-tr from-amber-400 to-amber-500 text-white';
+      btnThemeToggle.className = 'group relative inline-flex items-center h-7 w-[54px] rounded-full p-0.5 transition-all duration-300 focus:outline-none cursor-pointer select-none bg-amber-100/90 border border-amber-400 hover:border-amber-500 shadow-inner';
+      knob.style.transform = 'translateX(26px)';
+      knob.className = 'absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out flex items-center justify-center bg-gradient-to-tr from-amber-400 to-amber-500 text-white border border-amber-300';
+      knob.innerHTML = '<span class="text-[11px] leading-none select-none">\u2600\uFE0F</span>';
     } else {
-      btnThemeToggle.className = 'group relative inline-flex items-center h-7 w-[52px] rounded-full p-0.5 transition-all duration-300 focus:outline-none cursor-pointer select-none bg-zinc-900 border border-zinc-700 hover:border-sky-500/50 shadow-inner';
+      btnThemeToggle.className = 'group relative inline-flex items-center h-7 w-[54px] rounded-full p-0.5 transition-all duration-300 focus:outline-none cursor-pointer select-none bg-zinc-900 border border-zinc-700 hover:border-sky-500/60 shadow-inner';
       knob.style.transform = 'translateX(0px)';
-      knob.className = 'absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out flex items-center justify-center bg-gradient-to-tr from-sky-400 to-indigo-500 text-white';
+      knob.className = 'absolute top-0.5 left-0.5 w-6 h-6 rounded-full shadow-md transition-all duration-300 ease-in-out flex items-center justify-center bg-gradient-to-tr from-sky-400 to-indigo-500 text-white border border-sky-300/40';
+      knob.innerHTML = '<span class="text-[11px] leading-none select-none">\uD83C\uDF19</span>';
     }
   }
 

@@ -9,7 +9,7 @@
   --primary-glow: rgba(14, 165, 233, 0.35);
 }
 
-/* Light Theme (Modo Día) */
+/* Light Theme (Modo Día) - WCAG AA High-Contrast Optimizations */
 html.light,
 html:not(.dark) {
   --bg-main: #F8FAFC;
@@ -27,33 +27,36 @@ html:not(.dark) body {
 
 html.light header,
 html:not(.dark) header {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
 }
 
 html.light aside,
 html:not(.dark) aside {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  border-right: 1px solid rgba(226, 232, 240, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-right: 1px solid #E2E8F0 !important;
 }
 
 html.light .glass-panel,
 html:not(.dark) .glass-panel {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border-color: rgba(226, 232, 240, 0.9) !important;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03) !important;
+  background: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(15, 23, 42, 0.02) !important;
 }
 
 html.light .glass-card,
 html:not(.dark) .glass-card {
   background: #FFFFFF !important;
-  border-color: rgba(226, 232, 240, 0.9) !important;
+  border-color: #E2E8F0 !important;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04) !important;
 }
 
+/* Surface backgrounds in light mode */
 html.light .bg-zinc-900,
 html.light .bg-zinc-900\/90,
+html.light .bg-zinc-900\/80,
+html.light .bg-zinc-900\/40,
 html.light .bg-zinc-950,
 html.light .bg-\[\#0E1017\]\/90,
 html.light .bg-\[\#090A0F\],
@@ -62,6 +65,7 @@ html.light .bg-\[\#12141C\] {
   border-color: #E2E8F0 !important;
 }
 
+/* Base text contrast */
 html.light .text-white {
   color: #0F172A !important;
 }
@@ -75,7 +79,11 @@ html.light .text-zinc-300 {
 }
 
 html.light .text-zinc-400 {
-  color: #64748B !important;
+  color: #475569 !important; /* Slate 600: Contrast 5.7:1 (WCAG AA Compliant) */
+}
+
+html.light .text-zinc-500 {
+  color: #475569 !important;
 }
 
 html.light .border-zinc-800,
@@ -85,16 +93,13 @@ html.light .border-white\/10 {
   border-color: #E2E8F0 !important;
 }
 
-html.light .text-zinc-500 {
-  color: #64748B !important;
-}
-
 html.light .bg-zinc-800,
 html.light .bg-zinc-800\/80,
 html.light .bg-zinc-800\/90,
 html.light .bg-zinc-850 {
   background-color: #F1F5F9 !important;
-  border-color: #E2E8F0 !important;
+  border-color: #CBD5E1 !important;
+  color: #1E293B !important;
 }
 
 html.light .hover\:bg-zinc-850:hover,
@@ -104,25 +109,176 @@ html.light .hover\:bg-white\/5:hover {
   background-color: #E2E8F0 !important;
 }
 
+/* High-Contrast Status Badges for Light Mode */
+html.light .text-sky-300,
+html.light .text-sky-400 {
+  color: #0369A1 !important; /* Sky 700: Contrast 6.9:1 */
+}
+html.light .bg-sky-500\/10,
+html.light .bg-sky-500\/20 {
+  background-color: #F0F9FF !important;
+  border-color: #BAE6FD !important;
+}
+
+html.light .text-amber-300,
+html.light .text-amber-400 {
+  color: #92400E !important; /* Amber 800: Contrast 7.3:1 */
+}
+html.light .bg-amber-500\/10,
+html.light .bg-amber-500\/20 {
+  background-color: #FFFBEB !important;
+  border-color: #FDE68A !important;
+}
+
+html.light .text-emerald-300,
+html.light .text-emerald-400 {
+  color: #065F46 !important; /* Emerald 800: Contrast 7.8:1 */
+}
+html.light .bg-emerald-500\/10,
+html.light .bg-emerald-500\/20 {
+  background-color: #ECFDF5 !important;
+  border-color: #A7F3D0 !important;
+}
+
+html.light .text-purple-300,
+html.light .text-purple-400 {
+  color: #5B21B6 !important; /* Purple 800: Contrast 9.5:1 */
+}
+html.light .bg-purple-500\/10,
+html.light .bg-purple-500\/20 {
+  background-color: #FAF5FF !important;
+  border-color: #DDD6FE !important;
+}
+
+html.light .text-rose-300,
+html.light .text-rose-400 {
+  color: #9F1239 !important; /* Rose 800: Contrast 8.5:1 */
+}
+html.light .bg-rose-500\/10,
+html.light .bg-rose-500\/20 {
+  background-color: #FFF1F2 !important;
+  border-color: #FECDD3 !important;
+}
+
+/* Card Builder Top Bar Themes in Light Mode */
+html.light [class*="from-sky-950"] {
+  background: linear-gradient(to right, #F0F9FF, #FFFFFF, #F0F9FF) !important;
+  border-color: #BAE6FD !important;
+}
+html.light [class*="from-amber-950"] {
+  background: linear-gradient(to right, #FFFBEB, #FFFFFF, #FFFBEB) !important;
+  border-color: #FDE68A !important;
+}
+html.light [class*="from-emerald-950"] {
+  background: linear-gradient(to right, #ECFDF5, #FFFFFF, #ECFDF5) !important;
+  border-color: #A7F3D0 !important;
+}
+html.light [class*="from-purple-950"] {
+  background: linear-gradient(to right, #FAF5FF, #FFFFFF, #FAF5FF) !important;
+  border-color: #DDD6FE !important;
+}
+
+/* Inputs, Selects & Forms in Light Mode */
 html.light input,
 html.light select,
 html.light textarea {
-  background-color: #F8FAFC !important;
+  background-color: #FFFFFF !important;
   color: #0F172A !important;
   border-color: #CBD5E1 !important;
 }
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #0284C7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15) !important;
+}
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #64748B !important;
+  opacity: 1;
+}
 
-/* Ensure Wallet Pass Preview remains authentic in both themes */
+/* Dropdown Options */
+html.light select option {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+/* Tables in Light Mode */
+html.light thead {
+  background-color: #F1F5F9 !important;
+  border-bottom: 1px solid #CBD5E1 !important;
+}
+html.light thead th {
+  color: #475569 !important;
+}
+html.light tbody tr {
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+html.light tbody tr:hover {
+  background-color: #F8FAFC !important;
+}
+
+/* Preserve White Text on Saturated Solid Buttons */
+html.light button.bg-sky-500,
+html.light button.bg-sky-600,
+html.light a.bg-sky-500,
+html.light a.bg-sky-600,
+html.light a[class*="from-sky-500"][class*="to-indigo-600"],
+html.light button[class*="from-sky-500"][class*="to-indigo-600"] {
+  color: #FFFFFF !important;
+}
+html.light button.text-black,
+html.light a.text-black {
+  color: #000000 !important;
+}
+
+/* Full Isolation: Apple Wallet & Google Wallet Passes Preserve Authentic Colors */
 html.light .apple-wallet-pass-wrapper,
-html.light .google-wallet-pass-wrapper,
+html.light .google-wallet-pass-wrapper {
+  color: #FFFFFF !important;
+}
 html.light .apple-wallet-pass-wrapper .text-white,
 html.light .google-wallet-pass-wrapper .text-white {
   color: #FFFFFF !important;
 }
-
+html.light .apple-wallet-pass-wrapper .text-zinc-100,
+html.light .google-wallet-pass-wrapper .text-zinc-100 {
+  color: #F4F4F5 !important;
+}
+html.light .apple-wallet-pass-wrapper .text-zinc-300,
+html.light .google-wallet-pass-wrapper .text-zinc-300 {
+  color: #D4D4D8 !important;
+}
 html.light .apple-wallet-pass-wrapper .text-zinc-400,
 html.light .google-wallet-pass-wrapper .text-zinc-400 {
-  color: #9CA3AF !important;
+  color: #A1A1AA !important;
+}
+html.light .apple-wallet-pass-wrapper .text-amber-300,
+html.light .google-wallet-pass-wrapper .text-amber-300,
+html.light .apple-wallet-pass-wrapper .text-amber-400,
+html.light .google-wallet-pass-wrapper .text-amber-400 {
+  color: #FCD34D !important;
+}
+html.light .apple-wallet-pass-wrapper .text-emerald-400,
+html.light .google-wallet-pass-wrapper .text-emerald-400 {
+  color: #34D399 !important;
+}
+html.light .apple-wallet-pass-wrapper .text-sky-300,
+html.light .google-wallet-pass-wrapper .text-sky-300,
+html.light .apple-wallet-pass-wrapper .text-sky-400,
+html.light .google-wallet-pass-wrapper .text-sky-400 {
+  color: #38BDF8 !important;
+}
+html.light .apple-wallet-pass-wrapper .bg-black\/20,
+html.light .google-wallet-pass-wrapper .bg-black\/20,
+html.light .apple-wallet-pass-wrapper .bg-black\/30,
+html.light .google-wallet-pass-wrapper .bg-black\/30 {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+html.light .apple-wallet-pass-wrapper .bg-white\/10,
+html.light .google-wallet-pass-wrapper .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 * {
