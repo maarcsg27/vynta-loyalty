@@ -249,7 +249,7 @@ export const walletService = {
       backFields,
       textModulesData,
       logoImage: logoUrl,
-      iconImage: branding.stamp_custom_image || logoUrl,
+      iconImage: branding.stamp_completed_image || branding.stamp_custom_image || logoUrl,
       backgroundImage: cardBgImage,
       stripImage: cardBgImage,
       heroImage: cardBgImage,

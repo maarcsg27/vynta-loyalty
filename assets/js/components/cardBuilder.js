@@ -50,7 +50,9 @@ export function renderCardBuilder(businessId) {
     bg_image_url: activeProgram.branding?.bg_image_url || business?.branding?.bg_image_url || null,
     overlay_opacity: (activeProgram.branding?.overlay_opacity !== undefined) ? activeProgram.branding.overlay_opacity : (business?.branding?.overlay_opacity !== undefined ? business.branding.overlay_opacity : 0.70),
     stamp_icon: activeProgram.branding?.stamp_icon || business?.branding?.stamp_icon || 'star',
-    stamp_custom_image: activeProgram.branding?.stamp_custom_image || business?.branding?.stamp_custom_image || null,
+    stamp_completed_image: activeProgram.branding?.stamp_completed_image || activeProgram.branding?.stamp_custom_image || business?.branding?.stamp_completed_image || business?.branding?.stamp_custom_image || null,
+    stamp_uncompleted_image: activeProgram.branding?.stamp_uncompleted_image || business?.branding?.stamp_uncompleted_image || null,
+    stamp_custom_image: activeProgram.branding?.stamp_completed_image || activeProgram.branding?.stamp_custom_image || business?.branding?.stamp_completed_image || business?.branding?.stamp_custom_image || null,
     border_radius: activeProgram.branding?.border_radius || business?.branding?.border_radius || '24px',
     text_color: activeProgram.branding?.text_color || business?.branding?.text_color || '#FFFFFF'
   };
@@ -194,6 +196,8 @@ export function renderCardBuilder(businessId) {
       <input type="file" id="file-card-bg-upload" accept=".png, .jpg, .jpeg, .svg, .webp, image/*" class="hidden">
       <input type="file" id="file-logo-upload" accept=".png, .jpg, .jpeg, .svg, .webp, image/*" class="hidden">
       <input type="file" id="file-stamp-upload" accept=".png, .jpg, .jpeg, .svg, .webp, image/*" class="hidden">
+      <input type="file" id="file-stamp-completed-upload" accept=".png, .jpg, .jpeg, .svg, .webp, image/*" class="hidden">
+      <input type="file" id="file-stamp-uncompleted-upload" accept=".png, .jpg, .jpeg, .svg, .webp, image/*" class="hidden">
 
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-800 shrink-0">
         <div>
@@ -455,75 +459,150 @@ export function renderCardBuilder(businessId) {
             </div>
           ` : activeProgram.card_type === 'stamps' ? `
             <!-- SPECIFIC FOR TARJETA LOYALTY (SELLOS) -->
-            <div class="glass-panel p-5 rounded-3xl space-y-4 border border-amber-500/20 shadow-lg">
-              <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <h2 class="text-sm font-bold text-white flex items-center gap-2">
-                  <span>\u2605</span> 2. Dise\u00F1o e Imagen de los Sellos (.PNG / Iconos)
-                </h2>
-                <span id="badge-stamp-mode" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                  currentBranding.stamp_custom_image ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+            <div class="glass-panel p-5 rounded-3xl space-y-5 border border-amber-500/20 shadow-lg">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+                <div>
+                  <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                    <span>\u2605</span> 2. Dise\u00F1o e Imagen de los Sellos (.PNG / Iconos)
+                  </h2>
+                  <p class="text-[11px] text-zinc-400 mt-0.5">Configura de forma independiente la foto del sello completado y del sello sin completar.</p>
+                </div>
+                <span id="badge-stamp-mode" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border self-start sm:self-auto ${
+                  currentBranding.stamp_completed_image && currentBranding.stamp_uncompleted_image
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                    : currentBranding.stamp_completed_image
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                    : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
                 }">
-                  ${currentBranding.stamp_custom_image ? '\u2714 Sello .PNG Virtualizado y Activo' : 'Icono Vectorial'}
+                  ${
+                    currentBranding.stamp_completed_image && currentBranding.stamp_uncompleted_image
+                      ? '\u2714 2 Sellos Personalizados Activos'
+                      : currentBranding.stamp_completed_image
+                      ? '\u2714 Sello Completado Personalizado'
+                      : 'Iconos Vectoriales'
+                  }
                 </span>
               </div>
 
-              <!-- Custom Stamp Image Import Area -->
-              <div class="p-4 rounded-2xl bg-zinc-900/80 border border-amber-500/30 space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                    <span>\uD83D\uDDBC\uFE0F</span> Opci\u00F3n A: Virtualizar tu propio archivo .PNG (con fondo transparente)
-                  </span>
-                  ${currentBranding.stamp_custom_image ? `
-                    <button type="button" id="btn-clear-stamp-img" class="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
-                      <span>\u2715</span> Quitar imagen
-                    </button>
-                  ` : ''}
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                  <div id="box-stamp-custom-preview" class="sm:col-span-4 h-24 rounded-2xl border-2 border-dashed border-amber-500/40 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-2">
-                    ${currentBranding.stamp_custom_image ? `
-                      <img src="${currentBranding.stamp_custom_image}" class="w-14 h-14 object-contain filter drop-shadow" alt="sello preview">
-                      <span class="text-[9px] text-amber-300 mt-1 font-bold">.PNG Aplicado</span>
-                    ` : `
-                      <span class="text-2xl text-zinc-600 font-bold">\u2605</span>
-                      <span class="text-[9px] text-zinc-500 font-bold mt-1">Sin .PNG</span>
-                    `}
-                  </div>
-
-                  <div class="sm:col-span-8 space-y-3">
-                    <div id="dropzone-stamp" class="border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-2xl p-3 text-center cursor-pointer transition bg-amber-500/5 hover:bg-amber-500/15 group">
-                      <p class="text-xs font-bold text-amber-300 group-hover:text-amber-200 transition flex items-center justify-center gap-1.5">
-                        <span>\u2912</span> Arrastra tu archivo .PNG aqu\u00ED
-                      </p>
-                      <p class="text-[10px] text-zinc-400 mt-0.5">Compatible con cualquier imagen PNG transparente</p>
-                      <div class="mt-2 flex justify-center">
-                        <button type="button" id="btn-trigger-stamp-select" class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
-                          <span>\uD83D\uDCC1</span> Escanear / Subir Archivo .PNG
-                        </button>
+              <!-- DUAL STAMP CUSTOMIZATION GRID (COMPLETED vs UNCOMPLETED) -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- 2.1 SELLO COMPLETADO (OBTENIDO / ACTIVO) -->
+                <div class="p-4 rounded-2xl bg-zinc-900/90 border border-amber-500/30 space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        <span class="text-xs font-bold text-white">Sello Completado</span>
+                        <span class="text-[10px] text-emerald-400 font-semibold">(Obtenido)</span>
                       </div>
+                      ${currentBranding.stamp_completed_image ? `
+                        <button type="button" id="btn-clear-stamp-completed-img" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
+                          <span>\u2715</span> Quitar
+                        </button>
+                      ` : ''}
                     </div>
 
-                    <input type="url" id="input-stamp-custom-url" value="${currentBranding.stamp_custom_image && !currentBranding.stamp_custom_image.startsWith('data:') ? currentBranding.stamp_custom_image : ''}" placeholder="O pegar URL directa de .PNG (https://...)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 font-mono">
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                      <div id="box-stamp-completed-preview" class="sm:col-span-5 h-24 rounded-2xl border-2 border-dashed border-amber-500/40 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-2 text-center">
+                        ${currentBranding.stamp_completed_image ? `
+                          <img src="${currentBranding.stamp_completed_image}" class="w-12 h-12 object-contain filter drop-shadow" alt="sello completado preview">
+                          <span class="text-[9px] text-amber-300 mt-1 font-bold">.PNG Activo</span>
+                        ` : `
+                          <span class="text-2xl text-amber-400 font-bold">\u2605</span>
+                          <span class="text-[9px] text-zinc-500 font-bold mt-1">Sin Imagen</span>
+                        `}
+                      </div>
+
+                      <div class="sm:col-span-7 space-y-2">
+                        <div id="dropzone-stamp-completed" class="border border-dashed border-amber-500/40 hover:border-amber-400 rounded-xl p-2.5 text-center cursor-pointer transition bg-amber-500/5 hover:bg-amber-500/15 group">
+                          <p class="text-[11px] font-bold text-amber-300 group-hover:text-amber-200 transition flex items-center justify-center gap-1">
+                            <span>\u2912</span> Arrastra o sube PNG
+                          </p>
+                          <button type="button" id="btn-trigger-stamp-completed-select" class="mt-1.5 px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold transition flex items-center justify-center gap-1 w-full cursor-pointer">
+                            <span>\uD83D\uDCC1</span> Subir Sello Activo
+                          </button>
+                        </div>
+
+                        <input type="url" id="input-stamp-completed-url" value="${currentBranding.stamp_completed_image && !currentBranding.stamp_completed_image.startsWith('data:') ? currentBranding.stamp_completed_image : ''}" placeholder="O pegar enlace URL..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500 font-mono">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Fast Sample Completed Stamps -->
+                  <div class="pt-2 border-t border-zinc-800/80">
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Muestras Sello Activo:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <button type="button" data-sample-completed="https://cdn-icons-png.flaticon.com/512/924/924514.png" class="btn-sample-stamp-completed px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2615</span> Caf\u00E9</button>
+                      <button type="button" data-sample-completed="https://cdn-icons-png.flaticon.com/512/1000/1000966.png" class="btn-sample-stamp-completed px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2702\uFE0F</span> Barber\u00EDa</button>
+                      <button type="button" data-sample-completed="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="btn-sample-stamp-completed px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2B50</span> Estrella</button>
+                      <button type="button" data-sample-completed="https://cdn-icons-png.flaticon.com/512/785/785116.png" class="btn-sample-stamp-completed px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2764\uFE0F</span> Coraz\u00F3n</button>
+                      <button type="button" data-sample-completed="https://cdn-icons-png.flaticon.com/512/4213/4213651.png" class="btn-sample-stamp-completed px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83C\uDF81</span> Regalo</button>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Fast Sample .PNG Stamps -->
-                <div class="pt-2 border-t border-zinc-800/80">
-                  <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Sellos .PNG de Muestra R\u00E1pidos:</span>
-                  <div class="flex flex-wrap gap-2">
-                    <button type="button" data-sample-stamp="https://cdn-icons-png.flaticon.com/512/924/924514.png" class="btn-sample-stamp px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2615</span> Caf\u00E9</button>
-                    <button type="button" data-sample-stamp="https://cdn-icons-png.flaticon.com/512/1000/1000966.png" class="btn-sample-stamp px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2702\uFE0F</span> Barber\u00EDa</button>
-                    <button type="button" data-sample-stamp="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="btn-sample-stamp px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2B50</span> Estrella</button>
-                    <button type="button" data-sample-stamp="https://cdn-icons-png.flaticon.com/512/785/785116.png" class="btn-sample-stamp px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2764\uFE0F</span> Coraz\u00F3n</button>
+                <!-- 2.2 SELLO SIN COMPLETAR (PENDIENTE / VACIO) -->
+                <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-700/60 space-y-3 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-zinc-500"></span>
+                        <span class="text-xs font-bold text-white">Sello Sin Completar</span>
+                        <span class="text-[10px] text-zinc-400 font-semibold">(Pendiente / Vac\u00EDo)</span>
+                      </div>
+                      ${currentBranding.stamp_uncompleted_image ? `
+                        <button type="button" id="btn-clear-stamp-uncompleted-img" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
+                          <span>\u2715</span> Quitar
+                        </button>
+                      ` : ''}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                      <div id="box-stamp-uncompleted-preview" class="sm:col-span-5 h-24 rounded-2xl border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-2 text-center">
+                        ${currentBranding.stamp_uncompleted_image ? `
+                          <img src="${currentBranding.stamp_uncompleted_image}" class="w-12 h-12 object-contain opacity-70" alt="sello sin completar preview">
+                          <span class="text-[9px] text-zinc-300 mt-1 font-bold">.PNG Vac\u00EDo</span>
+                        ` : `
+                          <span class="text-2xl text-zinc-600 font-bold">\u2606</span>
+                          <span class="text-[9px] text-zinc-500 font-bold mt-1">Silueta Tenue</span>
+                        `}
+                      </div>
+
+                      <div class="sm:col-span-7 space-y-2">
+                        <div id="dropzone-stamp-uncompleted" class="border border-dashed border-zinc-700 hover:border-zinc-500 rounded-xl p-2.5 text-center cursor-pointer transition bg-zinc-800/30 hover:bg-zinc-800/60 group">
+                          <p class="text-[11px] font-bold text-zinc-300 group-hover:text-white transition flex items-center justify-center gap-1">
+                            <span>\u2912</span> Arrastra o sube PNG
+                          </p>
+                          <button type="button" id="btn-trigger-stamp-uncompleted-select" class="mt-1.5 px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 text-[10px] font-bold transition flex items-center justify-center gap-1 w-full cursor-pointer">
+                            <span>\uD83D\uDCC1</span> Subir Sello Vac\u00EDo
+                          </button>
+                        </div>
+
+                        <input type="url" id="input-stamp-uncompleted-url" value="${currentBranding.stamp_uncompleted_image && !currentBranding.stamp_uncompleted_image.startsWith('data:') ? currentBranding.stamp_uncompleted_image : ''}" placeholder="O pegar enlace URL..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-mono">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Fast Sample Uncompleted Stamps -->
+                  <div class="pt-2 border-t border-zinc-800/80">
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Muestras Sello Vac\u00EDo:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/481/481078.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\u2B55</span> C\u00EDrculo</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/1047/1047293.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\u2615</span> Taza Vac\u00EDa</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\uD83D\uDD12</span> Candado</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/1828/1828970.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\u2B50</span> Silueta</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/850/850960.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\uD83D\uDD52</span> Reloj</button>
+                    </div>
                   </div>
                 </div>
+
               </div>
 
-              <!-- Predefined Vector Icons Selector -->
-              <div class="space-y-2 pt-2">
-                <span class="block text-xs font-bold text-zinc-300">Opci\u00F3n B: O elegir uno de nuestros Iconos Vectoriales:</span>
-                <div class="grid grid-cols-5 gap-2" id="icon-selector-grid">
+              <!-- Predefined Vector Icons Selector (Option C) -->
+              <div class="space-y-2 pt-2 border-t border-zinc-800">
+                <span class="block text-xs font-bold text-zinc-300">Opci\u00F3n C: O seleccionar Icono Vectorial por defecto (si no subes imagen):</span>
+                <div class="grid grid-cols-5 sm:grid-cols-10 gap-2" id="icon-selector-grid">
                   ${[
                     { id: 'coffee', label: 'Caf\u00E9' },
                     { id: 'scissors', label: 'Tijeras' },
@@ -536,12 +615,12 @@ export function renderCardBuilder(businessId) {
                     { id: 'diamond', label: 'Diamante' },
                     { id: 'gift', label: 'Regalo' }
                   ].map(item => `
-                    <button type="button" data-icon="${item.id}" class="btn-select-icon p-2.5 rounded-2xl border text-center flex flex-col items-center gap-1 transition ${
-                      !currentBranding.stamp_custom_image && currentBranding.stamp_icon === item.id 
+                    <button type="button" data-icon="${item.id}" class="btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition ${
+                      !currentBranding.stamp_completed_image && currentBranding.stamp_icon === item.id 
                         ? 'bg-sky-500/20 border-sky-500 text-sky-400 shadow-md' 
                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                     }">
-                      <span class="text-xs font-bold">${item.label}</span>
+                      <span class="text-[11px] font-bold">${item.label}</span>
                     </button>
                   `).join('')}
                 </div>
@@ -865,12 +944,12 @@ export function renderCardBuilder(businessId) {
               </label>
 
               <!-- Option 2: Tarjeta Loyalty (Sellos) -->
-              <label class="p-3.5 rounded-2xl border-2 ${isBasic ? 'border-zinc-800/60 opacity-80 bg-zinc-900/60' : 'border-amber-500/50 hover:border-amber-400 bg-amber-950/30'} flex items-start gap-3 cursor-pointer transition group shadow-sm">
+              <label class="p-3.5 rounded-2xl border-2 border-amber-500/50 hover:border-amber-400 bg-amber-950/30 flex items-start gap-3 cursor-pointer transition group shadow-sm">
                 <input type="radio" name="new_card_style" value="stamps" class="mt-1 text-amber-500 focus:ring-amber-500 bg-black border-amber-600">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between">
                     <span class="text-xs font-black text-amber-300 group-hover:text-amber-200 transition">\u2B50 Tarjeta Loyalty (Sellos)</span>
-                    <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Plan PRO</span>
+                    <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Todos los Planes</span>
                   </div>
                   <p class="text-[11px] text-zinc-300 mt-0.5">Tarjeta de sellos. En cada visita o consumici\u00F3n el negocio estampa sellos en la tarjeta hasta completar la meta y desbloquear el premio.</p>
                 </div>
@@ -997,9 +1076,20 @@ export function renderCardBuilder(businessId) {
           couponCode = found.coupon_code || 'VYNTA-PROMO';
           minSpend = found.min_spend || 'Sin consumo m\u00EDnimo';
 
-          if (found.branding) {
-            currentBranding = { ...currentBranding, ...found.branding };
-          }
+          currentBranding = {
+            primary_color: found.branding?.primary_color || business?.branding?.primary_color || '#0EA5E9',
+            secondary_color: found.branding?.secondary_color || business?.branding?.secondary_color || '#0369A1',
+            bg_gradient_from: found.branding?.bg_gradient_from || business?.branding?.bg_gradient_from || '#0F172A',
+            bg_gradient_to: found.branding?.bg_gradient_to || business?.branding?.bg_gradient_to || '#020617',
+            bg_image_url: found.branding?.bg_image_url || business?.branding?.bg_image_url || null,
+            overlay_opacity: (found.branding?.overlay_opacity !== undefined) ? found.branding.overlay_opacity : 0.70,
+            stamp_icon: found.branding?.stamp_icon || business?.branding?.stamp_icon || 'star',
+            stamp_completed_image: found.branding?.stamp_completed_image || found.branding?.stamp_custom_image || null,
+            stamp_uncompleted_image: found.branding?.stamp_uncompleted_image || null,
+            stamp_custom_image: found.branding?.stamp_completed_image || found.branding?.stamp_custom_image || null,
+            border_radius: found.branding?.border_radius || business?.branding?.border_radius || '24px',
+            text_color: found.branding?.text_color || business?.branding?.text_color || '#FFFFFF'
+          };
           renderForm();
           toast.success(`Editando tarjeta: ${found.name}`);
         }
@@ -1079,7 +1169,7 @@ export function renderCardBuilder(businessId) {
       formCreate.querySelectorAll('input[name="new_card_style"]').forEach(radio => {
         radio.addEventListener('change', () => {
           const val = radio.value;
-          const isProStyle = val !== 'points';
+          const isProStyle = val !== 'points' && val !== 'stamps';
           if (isBasic && isProStyle) {
             if (alertPlanRestriction) alertPlanRestriction.classList.remove('hidden');
             if (btnSubmitCreate) btnSubmitCreate.disabled = true;
@@ -1101,8 +1191,8 @@ export function renderCardBuilder(businessId) {
           return;
         }
 
-        if (isBasic && style !== 'points') {
-          toast.error('En el Plan BASIC solo puedes crear Tarjetas Cliente (Puntos). Actualiza al Plan PRO para crear todos los estilos.');
+        if (isBasic && style !== 'points' && style !== 'stamps') {
+          toast.error('En el Plan BASIC solo puedes crear Tarjetas de Puntos y Sellos. Actualiza al Plan PRO para crear promociones y cupones.');
           return;
         }
 
@@ -1262,147 +1352,276 @@ export function renderCardBuilder(businessId) {
       });
     });
 
-    // --- STAMP IMAGE UPLOAD & DRAG/DROP ---
-    const fileStampUpload = container.querySelector('#file-stamp-upload');
-    const btnTriggerStamp = container.querySelector('#btn-trigger-stamp-select');
-    const dropzoneStamp = container.querySelector('#dropzone-stamp');
-    const inputStampCustomUrl = container.querySelector('#input-stamp-custom-url');
-    const boxStampPreview = container.querySelector('#box-stamp-custom-preview');
-    const badgeStampMode = container.querySelector('#badge-stamp-mode');
+    // --- DUAL STAMP IMAGE UPLOADS & HANDLERS (COMPLETED & UNCOMPLETED) ---
+    const fileStampCompletedUpload = container.querySelector('#file-stamp-completed-upload');
+    const fileStampUncompletedUpload = container.querySelector('#file-stamp-uncompleted-upload');
+    const btnTriggerStampCompleted = container.querySelector('#btn-trigger-stamp-completed-select');
+    const btnTriggerStampUncompleted = container.querySelector('#btn-trigger-stamp-uncompleted-select');
+    const dropzoneStampCompleted = container.querySelector('#dropzone-stamp-completed');
+    const dropzoneStampUncompleted = container.querySelector('#dropzone-stamp-uncompleted');
+    const inputStampCompletedUrl = container.querySelector('#input-stamp-completed-url');
+    const inputStampUncompletedUrl = container.querySelector('#input-stamp-uncompleted-url');
+    const boxStampCompletedPreview = container.querySelector('#box-stamp-completed-preview');
+    const boxStampUncompletedPreview = container.querySelector('#box-stamp-uncompleted-preview');
+    const btnClearStampCompletedImg = container.querySelector('#btn-clear-stamp-completed-img');
+    const btnClearStampUncompletedImg = container.querySelector('#btn-clear-stamp-uncompleted-img');
 
-    function applyCustomStamp(imageUrl) {
+    function updateStampBadge() {
+      const badge = container.querySelector('#badge-stamp-mode');
+      if (!badge) return;
+      if (currentBranding.stamp_completed_image && currentBranding.stamp_uncompleted_image) {
+        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/50';
+        badge.textContent = '\u2714 2 Sellos Personalizados Activos';
+      } else if (currentBranding.stamp_completed_image) {
+        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/50';
+        badge.textContent = '\u2714 Sello Completado Personalizado';
+      } else if (currentBranding.stamp_uncompleted_image) {
+        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-zinc-700/60 text-zinc-300 border-zinc-600';
+        badge.textContent = '\u2714 Sello Vac\u00EDo Personalizado';
+      } else {
+        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-400 border-sky-500/30';
+        badge.textContent = `Icono Vectorial (${currentBranding.stamp_icon || 'Estrella'})`;
+      }
+    }
+
+    function applyCompletedStamp(imageUrl) {
       if (!imageUrl) return;
+      currentBranding.stamp_completed_image = imageUrl;
       currentBranding.stamp_custom_image = imageUrl;
       currentBranding.stamp_icon = 'custom_image';
       
-      if (boxStampPreview) {
-        boxStampPreview.innerHTML = `
-          <img src="${imageUrl}" class="w-14 h-14 object-contain filter drop-shadow" alt="sello preview">
-          <span class="text-[9px] text-amber-300 mt-1 font-bold">.PNG Virtualizado</span>
+      if (boxStampCompletedPreview) {
+        boxStampCompletedPreview.innerHTML = `
+          <img src="${imageUrl}" class="w-12 h-12 object-contain filter drop-shadow" alt="sello completado preview">
+          <span class="text-[9px] text-amber-300 mt-1 font-bold">.PNG Activo</span>
         `;
       }
       
-      if (badgeStampMode) {
-        badgeStampMode.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/50';
-        badgeStampMode.textContent = '\u2714 Sello .PNG Virtualizado y Activo';
-      }
-
       container.querySelectorAll('.btn-select-icon').forEach(b => {
-        b.className = 'btn-select-icon p-2.5 rounded-2xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
+        b.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
       });
 
+      updateStampBadge();
       updatePreview();
-      toast.success('\u00A1Imagen .PNG virtualizada y aplicada a los sellos!');
+      toast.success('\u00A1Foto de sello completado aplicada!');
     }
 
-    if (btnTriggerStamp && fileStampUpload) {
-      btnTriggerStamp.onclick = (e) => {
+    function applyUncompletedStamp(imageUrl) {
+      if (!imageUrl) return;
+      currentBranding.stamp_uncompleted_image = imageUrl;
+
+      if (boxStampUncompletedPreview) {
+        boxStampUncompletedPreview.innerHTML = `
+          <img src="${imageUrl}" class="w-12 h-12 object-contain opacity-70" alt="sello sin completar preview">
+          <span class="text-[9px] text-zinc-300 mt-1 font-bold">.PNG Vac\u00EDo</span>
+        `;
+      }
+
+      updateStampBadge();
+      updatePreview();
+      toast.success('\u00A1Foto de sello sin completar aplicada!');
+    }
+
+    // --- COMPLETED STAMP LISTENERS ---
+    if (btnTriggerStampCompleted && fileStampCompletedUpload) {
+      btnTriggerStampCompleted.onclick = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        fileStampUpload.value = '';
-        fileStampUpload.click();
+        fileStampCompletedUpload.value = '';
+        fileStampCompletedUpload.click();
       };
     }
 
-    if (dropzoneStamp && fileStampUpload) {
-      dropzoneStamp.onclick = (e) => {
-        if (e.target !== btnTriggerStamp && !btnTriggerStamp?.contains(e.target)) {
-          fileStampUpload.value = '';
-          fileStampUpload.click();
+    if (dropzoneStampCompleted && fileStampCompletedUpload) {
+      dropzoneStampCompleted.onclick = (e) => {
+        if (e.target !== btnTriggerStampCompleted && !btnTriggerStampCompleted?.contains(e.target)) {
+          fileStampCompletedUpload.value = '';
+          fileStampCompletedUpload.click();
         }
       };
 
-      dropzoneStamp.ondragover = (e) => {
+      dropzoneStampCompleted.ondragover = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        dropzoneStamp.classList.add('border-amber-400', 'bg-amber-500/20');
+        dropzoneStampCompleted.classList.add('border-amber-400', 'bg-amber-500/20');
       };
 
-      dropzoneStamp.ondragleave = (e) => {
+      dropzoneStampCompleted.ondragleave = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        dropzoneStamp.classList.remove('border-amber-400', 'bg-amber-500/20');
+        dropzoneStampCompleted.classList.remove('border-amber-400', 'bg-amber-500/20');
       };
 
-      dropzoneStamp.ondrop = (e) => {
+      dropzoneStampCompleted.ondrop = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        dropzoneStamp.classList.remove('border-amber-400', 'bg-amber-500/20');
+        dropzoneStampCompleted.classList.remove('border-amber-400', 'bg-amber-500/20');
         const files = e.dataTransfer && e.dataTransfer.files;
         if (files && files.length > 0) {
           handleImageFile(files[0], (dataUrl) => {
-            if (inputStampCustomUrl) inputStampCustomUrl.value = '';
-            applyCustomStamp(dataUrl);
+            if (inputStampCompletedUrl) inputStampCompletedUrl.value = '';
+            applyCompletedStamp(dataUrl);
           });
         }
       };
 
-      fileStampUpload.onchange = (e) => {
-        const files = e.target.files || fileStampUpload.files;
+      fileStampCompletedUpload.onchange = (e) => {
+        const files = e.target.files || fileStampCompletedUpload.files;
         if (files && files.length > 0) {
           handleImageFile(files[0], (dataUrl) => {
-            if (inputStampCustomUrl) inputStampCustomUrl.value = '';
-            applyCustomStamp(dataUrl);
+            if (inputStampCompletedUrl) inputStampCompletedUrl.value = '';
+            applyCompletedStamp(dataUrl);
           });
         }
       };
     }
 
-    if (inputStampCustomUrl) {
-      inputStampCustomUrl.addEventListener('input', (e) => {
+    if (inputStampCompletedUrl) {
+      inputStampCompletedUrl.addEventListener('input', (e) => {
         const val = e.target.value.trim();
-        if (val) applyCustomStamp(val);
+        if (val) applyCompletedStamp(val);
       });
     }
 
-    container.querySelectorAll('.btn-sample-stamp').forEach(btn => {
+    container.querySelectorAll('.btn-sample-stamp-completed').forEach(btn => {
       btn.addEventListener('click', () => {
-        const stampUrl = btn.dataset.sampleStamp;
-        if (inputStampCustomUrl) inputStampCustomUrl.value = stampUrl;
-        applyCustomStamp(stampUrl);
+        const stampUrl = btn.dataset.sampleCompleted;
+        if (inputStampCompletedUrl) inputStampCompletedUrl.value = stampUrl;
+        applyCompletedStamp(stampUrl);
       });
     });
 
-    const btnClearStampImg = container.querySelector('#btn-clear-stamp-img');
-    if (btnClearStampImg) {
-      btnClearStampImg.addEventListener('click', () => {
+    if (btnClearStampCompletedImg) {
+      btnClearStampCompletedImg.addEventListener('click', () => {
+        currentBranding.stamp_completed_image = null;
         currentBranding.stamp_custom_image = null;
-        currentBranding.stamp_icon = 'star';
-        if (inputStampCustomUrl) inputStampCustomUrl.value = '';
-        if (boxStampPreview) {
-          boxStampPreview.innerHTML = `
-            <span class="text-2xl text-zinc-600 font-bold">\u2605</span>
-            <span class="text-[9px] text-zinc-500 font-bold mt-1">Sin .PNG</span>
+        if (!currentBranding.stamp_uncompleted_image) {
+          currentBranding.stamp_icon = 'star';
+        }
+        if (inputStampCompletedUrl) inputStampCompletedUrl.value = '';
+        if (boxStampCompletedPreview) {
+          boxStampCompletedPreview.innerHTML = `
+            <span class="text-2xl text-amber-400 font-bold">\u2605</span>
+            <span class="text-[9px] text-zinc-500 font-bold mt-1">Sin Imagen</span>
           `;
         }
-        if (badgeStampMode) {
-          badgeStampMode.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-400 border-sky-500/30';
-          badgeStampMode.textContent = 'Icono Vectorial';
-        }
+        updateStampBadge();
         updatePreview();
-        toast.success('Vuelto a icono vectorial');
+        toast.success('Foto de sello completado eliminada');
       });
     }
 
+    // --- UNCOMPLETED STAMP LISTENERS ---
+    if (btnTriggerStampUncompleted && fileStampUncompletedUpload) {
+      btnTriggerStampUncompleted.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileStampUncompletedUpload.value = '';
+        fileStampUncompletedUpload.click();
+      };
+    }
+
+    if (dropzoneStampUncompleted && fileStampUncompletedUpload) {
+      dropzoneStampUncompleted.onclick = (e) => {
+        if (e.target !== btnTriggerStampUncompleted && !btnTriggerStampUncompleted?.contains(e.target)) {
+          fileStampUncompletedUpload.value = '';
+          fileStampUncompletedUpload.click();
+        }
+      };
+
+      dropzoneStampUncompleted.ondragover = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneStampUncompleted.classList.add('border-zinc-500', 'bg-zinc-800/80');
+      };
+
+      dropzoneStampUncompleted.ondragleave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneStampUncompleted.classList.remove('border-zinc-500', 'bg-zinc-800/80');
+      };
+
+      dropzoneStampUncompleted.ondrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzoneStampUncompleted.classList.remove('border-zinc-500', 'bg-zinc-800/80');
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length > 0) {
+          handleImageFile(files[0], (dataUrl) => {
+            if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
+            applyUncompletedStamp(dataUrl);
+          });
+        }
+      };
+
+      fileStampUncompletedUpload.onchange = (e) => {
+        const files = e.target.files || fileStampUncompletedUpload.files;
+        if (files && files.length > 0) {
+          handleImageFile(files[0], (dataUrl) => {
+            if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
+            applyUncompletedStamp(dataUrl);
+          });
+        }
+      };
+    }
+
+    if (inputStampUncompletedUrl) {
+      inputStampUncompletedUrl.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) applyUncompletedStamp(val);
+      });
+    }
+
+    container.querySelectorAll('.btn-sample-stamp-uncompleted, .btn-sample-uncompleted').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const stampUrl = btn.dataset.sampleUncompleted;
+        if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = stampUrl;
+        applyUncompletedStamp(stampUrl);
+      });
+    });
+
+    if (btnClearStampUncompletedImg) {
+      btnClearStampUncompletedImg.addEventListener('click', () => {
+        currentBranding.stamp_uncompleted_image = null;
+        if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
+        if (boxStampUncompletedPreview) {
+          boxStampUncompletedPreview.innerHTML = `
+            <span class="text-2xl text-zinc-600 font-bold">\u2606</span>
+            <span class="text-[9px] text-zinc-500 font-bold mt-1">Silueta Tenue</span>
+          `;
+        }
+        updateStampBadge();
+        updatePreview();
+        toast.success('Foto de sello sin completar eliminada');
+      });
+    }
+
+    // --- VECTOR ICON PRESETS (OPTION C) ---
     container.querySelectorAll('.btn-select-icon').forEach(btn => {
       btn.addEventListener('click', () => {
+        currentBranding.stamp_completed_image = null;
+        currentBranding.stamp_uncompleted_image = null;
         currentBranding.stamp_custom_image = null;
         currentBranding.stamp_icon = btn.dataset.icon;
-        if (inputStampCustomUrl) inputStampCustomUrl.value = '';
-        if (boxStampPreview) {
-          boxStampPreview.innerHTML = `
-            <span class="text-2xl text-zinc-600 font-bold">\u2605</span>
+        if (inputStampCompletedUrl) inputStampCompletedUrl.value = '';
+        if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
+        if (boxStampCompletedPreview) {
+          boxStampCompletedPreview.innerHTML = `
+            <span class="text-2xl text-amber-400 font-bold">\u2605</span>
             <span class="text-[9px] text-zinc-500 font-bold mt-1">Icono: ${btn.textContent.trim()}</span>
           `;
         }
-        if (badgeStampMode) {
-          badgeStampMode.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-400 border-sky-500/30';
-          badgeStampMode.textContent = `Icono: ${btn.textContent.trim()}`;
+        if (boxStampUncompletedPreview) {
+          boxStampUncompletedPreview.innerHTML = `
+            <span class="text-2xl text-zinc-600 font-bold">\u2606</span>
+            <span class="text-[9px] text-zinc-500 font-bold mt-1">Silueta: ${btn.textContent.trim()}</span>
+          `;
         }
         container.querySelectorAll('.btn-select-icon').forEach(b => {
-          b.className = 'btn-select-icon p-2.5 rounded-2xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
+          b.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
         });
-        btn.className = 'btn-select-icon p-2.5 rounded-2xl border text-center flex flex-col items-center gap-1 transition bg-sky-500/20 border-sky-500 text-sky-400 shadow-md';
+        btn.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-sky-500/20 border-sky-500 text-sky-400 shadow-md';
+        updateStampBadge();
         updatePreview();
       });
     });

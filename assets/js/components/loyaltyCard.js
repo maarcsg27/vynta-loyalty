@@ -2,19 +2,31 @@
  * VYNTA LOYALTY - Digital Loyalty Card Component & Pass Renderers
  */
 
-export function getStampIconSVG(iconName, isActive, primaryColor = '#0EA5E9', customImageUrl = null) {
+export function getStampIconSVG(iconName, isActive, primaryColor = '#0EA5E9', completedImageUrl = null, uncompletedImageUrl = null) {
   const activeColor = primaryColor;
   const inactiveColor = '#3F3F46';
   const color = isActive ? activeColor : inactiveColor;
 
-  if (customImageUrl || iconName === 'custom_image') {
-    const imgSrc = customImageUrl || '';
-    if (imgSrc) {
+  if (isActive) {
+    const activeImg = completedImageUrl || null;
+    if (activeImg) {
       return `
         <div class="w-8 h-8 flex items-center justify-center relative">
-          <img src="${imgSrc}" alt="sello" class="max-w-full max-h-full object-contain rounded transition-all duration-300 ${
-            isActive ? 'stamp-active-anim filter drop-shadow scale-110' : 'opacity-25 grayscale'
-          }" style="${isActive ? `filter: drop-shadow(0 0 8px ${primaryColor});` : ''}" />
+          <img src="${activeImg}" alt="sello completado" class="max-w-full max-h-full object-contain rounded transition-all duration-300 stamp-active-anim filter drop-shadow scale-110" style="filter: drop-shadow(0 0 8px ${primaryColor});" />
+        </div>
+      `;
+    }
+  } else {
+    if (uncompletedImageUrl) {
+      return `
+        <div class="w-8 h-8 flex items-center justify-center relative">
+          <img src="${uncompletedImageUrl}" alt="sello sin completar" class="max-w-full max-h-full object-contain rounded transition-all duration-300 opacity-60 hover:opacity-85" />
+        </div>
+      `;
+    } else if (completedImageUrl) {
+      return `
+        <div class="w-8 h-8 flex items-center justify-center relative">
+          <img src="${completedImageUrl}" alt="sello pendiente" class="max-w-full max-h-full object-contain rounded transition-all duration-300 opacity-25 grayscale" />
         </div>
       `;
     }
@@ -183,7 +195,7 @@ export function renderLoyaltyCardHTML({
         }" style="${isActive ? `box-shadow: 0 0 15px ${branding.primary_color}44; border-color: ${branding.primary_color}99;` : ''}">
           <span class="text-[10px] font-bold self-start leading-none" style="color: ${isActive ? branding.primary_color : '#71717A'}">${i}</span>
           <div class="my-auto flex items-center justify-center">
-            ${getStampIconSVG(branding.stamp_icon, isActive, branding.primary_color, branding.stamp_custom_image)}
+            ${getStampIconSVG(branding.stamp_icon, isActive, branding.primary_color, branding.stamp_completed_image || branding.stamp_custom_image, branding.stamp_uncompleted_image)}
           </div>
           ${isActive ? `
             <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${branding.primary_color}"></span>
@@ -360,7 +372,7 @@ export function renderAppleWalletPassHTML({
         }" style="${isActive ? `box-shadow: 0 0 12px ${primaryColor}55; border-color: ${primaryColor}99;` : ''}">
           <span class="text-[9px] font-bold self-start leading-none" style="color: ${isActive ? primaryColor : '#9CA3AF'}">${i}</span>
           <div class="my-auto flex items-center justify-center">
-            ${getStampIconSVG(branding.stamp_icon, isActive, primaryColor, branding.stamp_custom_image)}
+            ${getStampIconSVG(branding.stamp_icon, isActive, primaryColor, branding.stamp_completed_image || branding.stamp_custom_image, branding.stamp_uncompleted_image)}
           </div>
           ${isActive ? `
             <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${primaryColor}"></span>
@@ -554,7 +566,7 @@ export function renderGoogleWalletPassHTML({
         }" style="${isActive ? `box-shadow: 0 0 12px ${primaryColor}55; border-color: ${primaryColor}99;` : ''}">
           <span class="text-[9px] font-bold self-start leading-none" style="color: ${isActive ? primaryColor : '#9CA3AF'}">${i}</span>
           <div class="my-auto flex items-center justify-center">
-            ${getStampIconSVG(branding.stamp_icon, isActive, primaryColor, branding.stamp_custom_image)}
+            ${getStampIconSVG(branding.stamp_icon, isActive, primaryColor, branding.stamp_completed_image || branding.stamp_custom_image, branding.stamp_uncompleted_image)}
           </div>
           ${isActive ? `
             <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${primaryColor}"></span>

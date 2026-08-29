@@ -42,12 +42,31 @@ export function seedInitialData() {
     {
       id: 'prog_default',
       business_id: 'biz_default',
-      name: 'Tarjeta Cliente VIP',
+      name: 'Tarjeta Loyalty Sellos',
+      card_type: 'stamps',
+      stamps_required: 10,
+      points_required: 100,
+      reward_name: 'Café Especial + Postre',
+      active: true,
+      branding: {
+        bg_gradient_from: '#0F172A',
+        bg_gradient_to: '#0F172A',
+        primary_color: '#F59E0B',
+        secondary_color: '#B45309',
+        text_color: '#FFFFFF',
+        stamp_icon: 'coffee'
+      },
+      created_at: d(0)
+    },
+    {
+      id: 'prog_points',
+      business_id: 'biz_default',
+      name: 'Tarjeta Cliente VIP Puntos',
       card_type: 'points',
       points_required: 100,
       stamps_required: 10,
-      reward_name: 'Café Especial + Postre',
-      active: true,
+      reward_name: 'Bono Regalo 10€',
+      active: false,
       branding: {
         bg_gradient_from: '#0F172A',
         bg_gradient_to: '#0F172A',
