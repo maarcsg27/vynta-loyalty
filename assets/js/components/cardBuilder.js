@@ -285,11 +285,11 @@ export function renderCardBuilder(businessId) {
 
                   <div class="space-y-1.5">
                     <div class="flex items-center justify-between">
-                      <label for="input-card-title-name" class="block text-[11px] font-bold text-zinc-300">Nombre de la Tarjeta:</label>
-                      <span id="char-count-card-name" class="text-[10px] font-mono text-zinc-400 font-bold">${cardName.length} / 25 car.</span>
+                      <label for="input-card-title-name" class="block text-[11px] font-bold text-zinc-300">Nombre de la Tarjeta / Programa:</label>
+                      <span id="char-count-card-name" class="text-[10px] font-mono text-zinc-400 font-bold">${cardName.length} / 45 car.</span>
                     </div>
-                    <input type="text" id="input-card-title-name" maxlength="25" value="${cardName}" placeholder="Nombre de esta tarjeta..." class="w-full bg-zinc-900/90 border border-zinc-700 hover:border-zinc-600 ${barTheme.focusBorder} rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition">
-                    <p class="text-[10px] text-zinc-400">Recomendado máx. 25 caracteres para evitar cortes en la pantalla del móvil.</p>
+                    <input type="text" id="input-card-title-name" maxlength="45" value="${cardName}" placeholder="Nombre de esta tarjeta..." class="w-full bg-zinc-900/90 border border-zinc-700 hover:border-zinc-600 ${barTheme.focusBorder} rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition">
+                    <p class="text-[10px] text-zinc-400">M\u00E1x. 45 caracteres (Google Wallet y Apple Wallet cortar\u00E1n con "..." si se supera este l\u00EDmite).</p>
                   </div>
                 </div>
               </div>
@@ -311,12 +311,12 @@ export function renderCardBuilder(businessId) {
             <!-- Wallet Specs Helper Badge -->
             <div class="p-3.5 rounded-2xl bg-sky-950/30 border border-sky-500/30 space-y-1.5 text-xs text-sky-200">
               <div class="flex items-center gap-2 font-bold text-sky-300">
-                <span>\u2139\uFE0F</span> Requisitos recomendados para Wallet:
+                <span>\u2139\uFE0F</span> Requisitos oficiales de Logotipo para Wallet:
               </div>
               <ul class="list-disc list-inside text-[11px] space-y-0.5 text-zinc-300">
-                <li><strong>Formato:</strong> PNG con <strong>fondo transparente</strong> (o blanco limpio).</li>
-                <li><strong>Tama\u00F1o ideal:</strong> Cuadrado de <code>300 x 300 px</code> o rectangular de <code>480 x 150 px</code>.</li>
-                <li><strong>Consejo de dise\u00F1o:</strong> Evita textos diminutos que no se distingan en la miniatura del m\u00F3vil.</li>
+                <li><strong>Tama\u00F1o ideal:</strong> <code>660 x 660 px</code> (M\u00EDnimo: <code>480 x 480 px</code>), proporci\u00F3n 1:1.</li>
+                <li><strong>Formato:</strong> PNG con <strong>fondo transparente</strong>.</li>
+                <li><strong>Regla de oro Google Wallet:</strong> Se recorta autom\u00E1ticamente en forma de <strong>c\u00EDrculo</strong>. Aseg\u00FArate de que el icono est\u00E9 centrado y deja un 15% de margen libre en las esquinas.</li>
               </ul>
             </div>
 
@@ -701,20 +701,21 @@ export function renderCardBuilder(businessId) {
               <!-- Short Text Guidelines Helper -->
               <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1 text-xs text-amber-200">
                 <div class="flex items-center gap-1.5 font-bold text-amber-300">
-                  <span>\uD83C\uDFF7\uFE0F</span> Regla de Recompensa para Apple & Google Wallet:
+                  <span>\u270D\uFE0F</span> Restricciones de Texto para Wallet (Evita que se corte con "..."):
                 </div>
-                <p class="text-[11px] text-zinc-300">
-                  Usa t\u00EDtulos de premio cortos de m\u00E1ximo <strong>25-30 caracteres</strong> (ej: <em>\u201C1 Caf\u00E9 Gratis\u201D</em>, <em>\u201C10\u20AC de Descuento\u201D</em>) para evitar que Apple o Android corten el texto con puntos suspensivos.
-                </p>
+                <ul class="list-disc list-inside text-[11px] space-y-0.5 text-zinc-300">
+                  <li><strong>T\u00EDtulo del campo / Premio:</strong> M\u00E1ximo <strong>20 caracteres</strong> (Ej: <em>\u201C1 Shisha Gratis\u201D</em>, <em>\u201C1 Caf\u00E9 + Tarta\u201D</em>).</li>
+                  <li><strong>Valor del campo:</strong> M\u00E1ximo <strong>15 caracteres</strong> (Ej: <em>\u201C5 de 10\u201D</em>, <em>\u201C100 PTS\u201D</em>).</li>
+                </ul>
               </div>
 
               <div class="space-y-3">
                 <div>
                   <div class="flex items-center justify-between mb-1">
                     <label class="block text-xs font-bold text-zinc-300">Nombre del Premio / Recompensa *</label>
-                    <span id="char-count-reward-name" class="text-[10px] font-mono text-zinc-400 font-bold">${rewardName.length} / 30 car.</span>
+                    <span id="char-count-reward-name" class="text-[10px] font-mono text-zinc-400 font-bold">${rewardName.length} / 20 car.</span>
                   </div>
-                  <input type="text" id="input-reward-name" maxlength="30" value="${rewardName}" placeholder="Ej: 1 Caf\u00E9 Gratis + Tarta" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                  <input type="text" id="input-reward-name" maxlength="30" value="${rewardName}" placeholder="Ej: 1 Shisha Gratis, 1 Caf\u00E9" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -928,11 +929,12 @@ export function renderCardBuilder(businessId) {
             <!-- Solid Colors Guidelines Helper -->
             <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5 text-xs">
               <div class="flex items-center gap-1.5 font-bold text-sky-300">
-                <span>\uD83D\uDD0E</span> C\u00F3mo funcionan los colores en Wallet:
+                <span>\uD83C\uDFA8</span> Reglas de Color para Google Wallet & Apple Wallet:
               </div>
               <ul class="list-disc list-inside text-[11px] space-y-0.5 text-zinc-300">
-                <li><strong>Color de Fondo S\u00F3lido:</strong> Elige tonos oscuros y elegantes (ej: <code>#0F172A</code> negro/grafito, <code>#1E1B4B</code> azul marino, o <code>#064E3B</code> verde oscuro).</li>
-                <li><strong>Color de Acento:</strong> Destacar\u00E1 los sellos, puntos, n\u00FAmeros y etiquetas clave con m\u00E1xima legibilidad en la pantalla.</li>
+                <li><strong>Regla de oro:</strong> Google Wallet no permite im\u00E1genes completas de fondo ni degradados en el cuerpo de la tarjeta. Debe ser un <strong>color hexadecimal liso</strong> (ej: <code>#0D0D0D</code>, <code>#000000</code>).</li>
+                <li><strong>Contraste inteligente:</strong> Google cambiar\u00E1 autom\u00E1ticamente el color del texto a blanco o negro para garantizar m\u00E1xima legibilidad.</li>
+                <li><strong>Color de Acento:</strong> Destacar\u00E1 sellos activos, progreso num\u00E9rico e iconos.</li>
               </ul>
             </div>
             
@@ -1426,8 +1428,8 @@ export function renderCardBuilder(businessId) {
         activeProgram.name = cardName;
         if (charCountCardName) {
           const len = e.target.value.length;
-          charCountCardName.textContent = `${len} / 25 car.`;
-          charCountCardName.className = len >= 25 ? 'text-[10px] font-mono text-amber-400 font-bold' : 'text-[10px] font-mono text-zinc-400 font-bold';
+          charCountCardName.textContent = `${len} / 45 car.`;
+          charCountCardName.className = len > 45 ? 'text-[10px] font-mono text-amber-400 font-bold' : 'text-[10px] font-mono text-zinc-400 font-bold';
         }
         updatePreview();
       });
@@ -2078,8 +2080,8 @@ export function renderCardBuilder(businessId) {
         rewardName = e.target.value || 'Recompensa';
         if (charCountRewardName) {
           const len = rewardName.length;
-          charCountRewardName.textContent = `${len} / 30 car.`;
-          if (len > 30) {
+          charCountRewardName.textContent = `${len} / 20 car.`;
+          if (len > 20) {
             charCountRewardName.className = 'text-[10px] font-mono text-amber-400 font-bold';
           } else {
             charCountRewardName.className = 'text-[10px] font-mono text-zinc-400 font-bold';
