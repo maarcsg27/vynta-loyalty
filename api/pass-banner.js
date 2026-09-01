@@ -214,14 +214,16 @@ export default async function handler(req, res) {
 
   const {
     type = 'stamps',
+    format = '3x1',
     stamps = '0',
     total = '10',
     points = '0',
     maxPoints = '100',
     color = '0EA5E9',
-    bg = '090A0F',
+    bg = '0D0D0D',
     text = 'FFFFFF',
-    reward = 'Regalo'
+    reward = 'Recompensa',
+    name = 'VYNTA'
   } = req.query || {};
 
   const numStamps = Math.max(0, parseInt(stamps, 10) || 0);
@@ -229,8 +231,9 @@ export default async function handler(req, res) {
   const numPoints = Math.max(0, parseInt(points, 10) || 0);
   const numMaxPoints = Math.max(1, parseInt(maxPoints, 10) || 100);
 
-  const width = 900;
-  const height = 300;
+  const is16x9 = format === '16x9' || format === '16:9' || format === 'hero';
+  const width = is16x9 ? 1032 : 900;
+  const height = is16x9 ? 580 : 300;
   const buf = Buffer.alloc(width * height * 4);
 
   const bgRgb = hexToRgb(bg);
@@ -251,7 +254,32 @@ export default async function handler(req, res) {
     }
   }
 
-  if (type === 'points') {
+  if (is16x9) {
+    // Premium 16:9 Hero Image for Google Wallet (1032 x 580 px)
+    // Draw top branding line
+    drawText(buf, width, height, (name || 'VYNTA').toUpperCase(), 60, 50, 4, [255, 255, 255]);
+    drawText(buf, width, height, type === 'points' ? 'PROGRAMA DE PUNTOS VIP' : 'TARJETA DE SELLOS DIGITAL', 60, 105, 3, primRgb);
+
+    // Center decorative hero panel
+    const heroBoxW = 912;
+    const heroBoxH = 260;
+    const heroX = 60;
+    const heroY = 160;
+    drawRoundedRect(buf, width, height, heroX, heroY, heroBoxW, heroBoxH, 24, [20, 24, 35, 220], [primRgb[0], primRgb[1], primRgb[2], 90], 3);
+
+    drawText(buf, width, height, 'RECOMPENSA EXCLUSIVA', heroX + 40, heroY + 40, 3, primRgb);
+    drawText(buf, width, height, (reward || 'Premio').toUpperCase(), heroX + 40, heroY + 85, 5, [255, 255, 255]);
+
+    if (type === 'points') {
+      const pct = Math.min(100, Math.round((numPoints / numMaxPoints) * 100));
+      drawText(buf, width, height, `SALDO: ${numPoints} / ${numMaxPoints} PTS (${pct}%)`, heroX + 40, heroY + 165, 4, [245, 158, 11]);
+    } else {
+      drawText(buf, width, height, `PROGRESO: ${numStamps} DE ${numTotal} SELLOS`, heroX + 40, heroY + 165, 4, [52, 211, 153]);
+    }
+
+    // Bottom subtle tag
+    drawText(buf, width, height, 'PASES DIGITALES PARA GOOGLE WALLET', 60, 480, 3, [156, 163, 175]);
+  } else if (type === 'points') {
     drawText(buf, width, height, 'PUNTOS ACUMULADOS', 315, 38, 3, primRgb);
     drawText(buf, width, height, `${numPoints} PTS`, 375, 95, 6, [255, 255, 255]);
 

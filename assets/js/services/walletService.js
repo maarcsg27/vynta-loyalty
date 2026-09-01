@@ -186,7 +186,7 @@ export const walletService = {
     }
 
     // Correctly determine colorPreset based on card background
-    const isDarkBg = !bgColor || bgColor.startsWith('#0') || bgColor.startsWith('#1') || bgColor.startsWith('#2') || bgColor === '#000000';
+    const isDarkBg = !bgColor || bgColor.startsWith('#0') || bgColor.startsWith('#1') || bgColor.startsWith('#2') || bgColor === '#000000' || bgColor === '#0D0D0D';
     let colorPreset = 'dark';
     if (!isDarkBg) {
       if (primaryColor.includes('F59E0B') || primaryColor.includes('D97706') || primaryColor.includes('B45309')) colorPreset = 'orange';
@@ -211,6 +211,7 @@ export const walletService = {
     const currentStampsVal = Number(card?.stamps_count) || 0;
     const currentPointsVal = Number(card?.points_count !== undefined ? card.points_count : (card?.stamps_count || 0) * 10);
     const maxPointsVal = Number(program?.points_required) || 100;
+    const isCompleted = cardType === 'points' ? currentPointsVal >= maxPointsVal : currentStampsVal >= totalStampsVal;
 
     const bannerQuery = [
       `type=${encodeURIComponent(cardType)}`,
@@ -225,8 +226,107 @@ export const walletService = {
       `name=${encodeURIComponent(business?.name || 'VYNTA')}`
     ].join('&');
 
-    const dynamicBannerUrl = `${origin}/api/pass-banner?${bannerQuery}&v=${Date.now()}`;
-    const cardBgImage = branding.bg_image_url || branding.card_bg_image || dynamicBannerUrl;
+    // 16:9 Hero Image for Google Wallet (1032 x 580 px) & 3:1 Strip for Apple Wallet (1032 x 336 px)
+    const heroImage16x9 = branding.bg_image_url || `${origin}/api/pass-banner?format=16x9&${bannerQuery}&v=${Date.now()}`;
+    const stripImage3x1 = branding.bg_image_url || `${origin}/api/pass-banner?format=3x1&${bannerQuery}&v=${Date.now()}`;
+
+    // imageModulesData for Google Wallet: Renders visual stamp row grid physically below the hero section
+    const imageModulesData = [
+      {
+        id: 'stamps_visual_grid',
+        mainImage: {
+          sourceUri: {
+            uri: stripImage3x1
+          },
+          contentDescription: {
+            defaultValue: {
+              language: 'es-ES',
+              value: cardType === 'points' ? `Progreso de puntos: ${currentPointsVal} PTS` : `Progreso de sellos: ${currentStampsVal} de ${totalStampsVal}`
+            }
+          }
+        }
+      }
+    ];
+
+    // cardTemplateOverride: Google Wallet 2-Row Clean Front Layout
+    const cardTemplateOverride = {
+      cardRowTemplateInfos: [
+        {
+          oneItem: {
+            item: {
+              firstValue: {
+                fields: [
+                  { fieldPath: "object.textModulesData['titular']" }
+                ]
+              }
+            }
+          }
+        },
+        {
+          threeItems: {
+            startItem: {
+              firstValue: {
+                fields: [
+                  { fieldPath: cardType === 'points' ? "object.textModulesData['puntos']" : "object.textModulesData['sellos']" }
+                ]
+              }
+            },
+            middleItem: {
+              firstValue: {
+                fields: [
+                  { fieldPath: "object.textModulesData['recompensa']" }
+                ]
+              }
+            },
+            endItem: {
+              firstValue: {
+                fields: [
+                  { fieldPath: "object.textModulesData['estado']" }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    };
+
+    // Google Wallet LoyaltyClass & LoyaltyObject payload definitions
+    const googleWalletClass = {
+      id: `issuer.${business?.id || 'vynta'}.${program?.id || 'loyalty'}`,
+      issuerName: business?.name || 'VYNTA Loyalty',
+      programName: program?.name || 'Tarjeta de Fidelización',
+      programLogo: {
+        sourceUri: { uri: logoUrl },
+        contentDescription: { defaultValue: { language: 'es-ES', value: 'Logo del comercio' } }
+      },
+      heroImage: {
+        sourceUri: { uri: heroImage16x9 },
+        contentDescription: { defaultValue: { language: 'es-ES', value: 'Hero Image 16:9' } }
+      },
+      hexBackgroundColor: bgColor || '#0D0D0D',
+      reviewStatus: 'UNDER_REVIEW',
+      cardTemplateOverride: cardTemplateOverride
+    };
+
+    const googleWalletObject = {
+      id: `issuer.${card?.id || 'card_' + Date.now()}`,
+      classId: googleWalletClass.id,
+      state: 'ACTIVE',
+      accountId: cardNumber,
+      accountName: custName,
+      barcode: {
+        type: 'QR_CODE',
+        value: qrUrl,
+        alternateText: cardNumber
+      },
+      heroImage: {
+        sourceUri: { uri: heroImage16x9 },
+        contentDescription: { defaultValue: { language: 'es-ES', value: 'Hero Image 16:9' } }
+      },
+      imageModulesData: imageModulesData,
+      textModulesData: textModulesData,
+      hexBackgroundColor: bgColor || '#0D0D0D'
+    };
 
     const payload = {
       barcodeValue: qrUrl,
@@ -239,7 +339,7 @@ export const walletService = {
       backgroundColor: hexToRgb(bgColor),
       foregroundColor: hexToRgb(fgColor),
       labelColor: hexToRgb(primaryColor),
-      hexBackgroundColor: bgColor,
+      hexBackgroundColor: bgColor || '#0D0D0D',
       hexForegroundColor: fgColor,
       hexLabelColor: primaryColor,
       primaryFields,
@@ -248,11 +348,15 @@ export const walletService = {
       auxiliaryFields,
       backFields,
       textModulesData,
+      imageModulesData,
+      cardTemplateOverride,
+      googleWalletClass,
+      googleWalletObject,
       logoImage: logoUrl,
       iconImage: branding.stamp_completed_image || branding.stamp_custom_image || logoUrl,
-      backgroundImage: cardBgImage,
-      stripImage: cardBgImage,
-      heroImage: cardBgImage,
+      backgroundImage: stripImage3x1,
+      stripImage: stripImage3x1,
+      heroImage: heroImage16x9,
       programLogo: logoUrl,
       colorPreset: colorPreset,
       sharingProhibited: false

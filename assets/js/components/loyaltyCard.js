@@ -519,23 +519,27 @@ export function renderGoogleWalletPassHTML({
   const custName = customer ? `${customer.first_name} ${customer.last_name || ''}`.trim() : 'Mar\u00EDa Garc\u00EDa';
   const cardNumber = card?.card_number || 'DEMO-0001';
 
-  const solidBg = branding.bg_gradient_from || '#0F172A';
+  const solidBg = branding.bg_gradient_from || '#0D0D0D';
   const bgStyle = `background: ${solidBg};`;
+
+  const totalStampsVal = Number(program?.stamps_required) || 10;
+  const currentStampsVal = Number(card?.stamps_count !== undefined ? card.stamps_count : 4);
+  const maxPointsVal = Number(program?.points_required || (program?.stamps_required ? program.stamps_required * 10 : 100));
+  const currentPointsVal = Number(card?.points_count !== undefined ? card.points_count : (card?.stamps_count || 4) * 10);
+  const terms = program?.terms || 'Válido presentando este pase o código QR en el establecimiento al momento del pago.';
 
   let typeSubtitle = 'Tarjeta Cliente \u2022 Puntos';
   let googleHeroHtml = '';
 
   if (cardType === 'points') {
     typeSubtitle = 'Tarjeta Cliente \u2022 Puntos';
-    const maxPoints = Number(program?.points_required || (program?.stamps_required ? program.stamps_required * 10 : 100));
-    const currentPoints = Number(card?.points_count !== undefined ? card.points_count : (card?.stamps_count || 4) * 10);
-    const progressPct = Math.min(100, Math.round((currentPoints / maxPoints) * 100));
+    const progressPct = Math.min(100, Math.round((currentPointsVal / maxPointsVal) * 100));
 
     googleHeroHtml = `
       <div class="space-y-3 bg-black/30 p-4 rounded-2xl border border-white/10 backdrop-blur-sm">
         <div class="flex justify-between items-center text-xs">
           <span class="font-bold text-zinc-300">Puntos Acumulados</span>
-          <span class="font-mono font-extrabold text-lg" style="color: ${primaryColor}">${currentPoints} <span class="text-xs">PTS</span></span>
+          <span class="font-mono font-extrabold text-lg" style="color: ${primaryColor}">${currentPointsVal} <span class="text-xs">PTS</span></span>
         </div>
 
         <div class="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
@@ -547,13 +551,13 @@ export function renderGoogleWalletPassHTML({
         </div>
 
         <div class="flex justify-between items-center text-[10px] text-zinc-400">
-          <span>Meta: <strong class="text-amber-300">${maxPoints} pts</strong></span>
+          <span>Meta: <strong class="text-amber-300">${maxPointsVal} pts</strong></span>
           <span class="text-emerald-400 font-bold">\u2714 ${progressPct}% Completado</span>
         </div>
       </div>
     `;
   } else if (cardType === 'stamps') {
-    typeSubtitle = 'Tarjeta Loyalty • Sellos';
+    typeSubtitle = 'Tarjeta Loyalty \u2022 Sellos';
     const totalStamps = Number(program?.stamps_required) || 10;
     const currentStamps = Number(card?.stamps_count) || 4;
 
@@ -576,24 +580,17 @@ export function renderGoogleWalletPassHTML({
     }
 
     googleHeroHtml = `
-      <div class="space-y-3">
-        <div class="grid grid-cols-5 gap-1.5">
-          ${googleStamps}
-        </div>
-        <div class="grid grid-cols-3 gap-2 pt-2.5 border-t border-white/10 text-left bg-black/20 p-2.5 rounded-xl">
-          <div>
-            <span class="text-[8px] uppercase tracking-widest text-zinc-400 block font-bold">TITULAR</span>
-            <span class="text-xs font-bold text-white truncate block">${custName}</span>
-          </div>
-          <div>
-            <span class="text-[8px] uppercase tracking-widest text-zinc-400 block font-bold">PROGRESO</span>
-            <span class="text-xs font-extrabold" style="color: ${primaryColor}">${currentStamps} / ${totalStamps}</span>
-          </div>
-          <div class="text-right">
-            <span class="text-[8px] uppercase tracking-widest text-zinc-400 block font-bold">ESTADO</span>
-            <span class="text-xs font-bold ${currentStamps >= totalStamps ? 'text-emerald-400' : 'text-zinc-300'}">
-              ${currentStamps >= totalStamps ? '¡Completada!' : 'En curso'}
+      <div class="space-y-2">
+        <!-- imageModulesData: Visual Stamps Grid -->
+        <div class="p-2.5 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-sm space-y-2">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-[9px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1">
+              <span>\u2B50</span> M\u00F3dulo Visual de Sellos (imageModulesData)
             </span>
+            <span class="text-[10px] font-mono font-bold" style="color: ${primaryColor}">${currentStamps} / ${totalStamps}</span>
+          </div>
+          <div class="grid grid-cols-5 gap-1.5">
+            ${googleStamps}
           </div>
         </div>
       </div>
@@ -633,6 +630,9 @@ export function renderGoogleWalletPassHTML({
     `;
   }
 
+  const defaultHero16x9 = `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1032&h=580&fit=crop&q=80`;
+  const heroImgUrl = branding.bg_image_url || defaultHero16x9;
+
   return `
     <div class="google-wallet-pass-wrapper w-full max-w-[340px] mx-auto select-none font-sans text-white">
       <div class="shadow-2xl overflow-hidden border relative" style="
@@ -642,7 +642,7 @@ export function renderGoogleWalletPassHTML({
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9), 0 0 25px -5px ${primaryColor}22;
       ">
         <!-- Google Header -->
-        <div class="p-4 border-b border-white/10 flex items-center justify-between" style="background: rgba(0,0,0,0.3);">
+        <div class="p-4 border-b border-white/10 flex items-center justify-between" style="background: rgba(0,0,0,0.4);">
           <div class="flex items-center gap-3 min-w-0">
             <img src="${business?.logo_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=128&auto=format&fit=crop&q=80'}" alt="logo" class="w-9 h-9 rounded-xl object-cover border border-white/20 bg-zinc-900 shrink-0">
             <div class="min-w-0">
@@ -655,40 +655,65 @@ export function renderGoogleWalletPassHTML({
           </span>
         </div>
 
-        <!-- Google Loyalty Hero Section -->
-        <div class="p-5 space-y-4">
-          ${branding.bg_image_url ? `
-            <div class="w-full aspect-[3/1] rounded-2xl overflow-hidden border border-white/10 shadow bg-black/40">
-              <img src="${branding.bg_image_url}" alt="Banner Hero 3:1" class="w-full h-full object-cover">
+        <!-- 1. HERO IMAGE (Formato 16:9 Estricto - Fondo Integrado) -->
+        <div class="px-4 pt-4">
+          <div class="w-full aspect-[16/9] rounded-2xl overflow-hidden border border-white/15 shadow-xl bg-black/60 relative group">
+            <img src="${heroImgUrl}" alt="Hero Image 16:9" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-3">
+              <span class="text-[9px] font-bold uppercase tracking-wider text-zinc-300">Recompensa</span>
+              <h3 class="text-sm font-extrabold text-white truncate leading-tight">${rewardName}</h3>
             </div>
-          ` : ''}
-          <div class="space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider" style="color: ${primaryColor}">
-              Recompensa
+            <span class="absolute top-2 right-2 bg-black/70 backdrop-blur-md text-[8px] font-mono font-bold text-sky-300 px-2 py-0.5 rounded-full border border-sky-400/30">
+              Hero 16:9
             </span>
-            <h3 class="text-base font-extrabold text-white">${rewardName}</h3>
           </div>
+        </div>
 
+        <!-- Google Loyalty Hero & Modules Section -->
+        <div class="p-4 space-y-3">
           ${googleHeroHtml}
 
-          <!-- Customer Info Fields -->
-          <div class="grid grid-cols-2 gap-3 pt-1 text-xs">
-            <div class="bg-black/30 p-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
-              <span class="text-[9px] uppercase font-bold text-zinc-400 block">Titular</span>
-              <span class="font-bold text-white truncate block">${custName}</span>
+          <!-- 2. CARD TEMPLATE OVERRIDE: Estructura en 2 Filas Limpias -->
+          <div class="space-y-2 pt-1 text-xs">
+            <!-- Fila 1: Campo Principal (Titular del pase) -->
+            <div class="bg-black/35 p-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
+              <span class="text-[8px] uppercase font-bold text-zinc-400 block tracking-wider">TITULAR DEL PASE (cardRowTemplateInfo.oneItem)</span>
+              <span class="font-bold text-white text-xs truncate block mt-0.5">${custName}</span>
             </div>
-            <div class="bg-black/30 p-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
-              <span class="text-[9px] uppercase font-bold text-zinc-400 block">Estado</span>
-              <span class="font-bold text-emerald-400">\u2714 Activo</span>
+
+            <!-- Fila 2: Tres Columnas Secundarias -->
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-black/35 p-2 rounded-xl border border-white/10 backdrop-blur-sm text-left">
+                <span class="text-[8px] uppercase font-bold text-zinc-400 block tracking-wider">PROGRESO</span>
+                <span class="font-extrabold text-[11px] truncate block mt-0.5" style="color: ${primaryColor}">
+                  ${cardType === 'points' ? `${pointsVal || 40} PTS` : `${card?.stamps_count || 4} / ${totalStampsVal || 10}`}
+                </span>
+              </div>
+              <div class="bg-black/35 p-2 rounded-xl border border-white/10 backdrop-blur-sm text-left">
+                <span class="text-[8px] uppercase font-bold text-zinc-400 block tracking-wider">PREMIO</span>
+                <span class="font-bold text-white text-[11px] truncate block mt-0.5">${rewardName}</span>
+              </div>
+              <div class="bg-black/35 p-2 rounded-xl border border-white/10 backdrop-blur-sm text-right">
+                <span class="text-[8px] uppercase font-bold text-zinc-400 block tracking-wider">ESTADO</span>
+                <span class="font-bold text-[11px] truncate block mt-0.5 ${((card?.stamps_count || 4) >= (totalStampsVal || 10)) ? 'text-emerald-400' : 'text-zinc-300'}">
+                  ${((card?.stamps_count || 4) >= (totalStampsVal || 10)) ? '\u2714 Completada' : '\u23F3 En curso'}
+                </span>
+              </div>
             </div>
           </div>
 
           <!-- Barcode Section in Google Wallet -->
-          <div class="p-3.5 flex flex-col items-center justify-center">
-            <div class="bg-white p-3 rounded-2xl shadow-xl flex flex-col items-center justify-center">
-              <div id="${containerId}" class="flex items-center justify-center min-w-[130px] min-h-[130px]"></div>
+          <div class="pt-1 flex flex-col items-center justify-center">
+            <div class="bg-white p-3 rounded-2xl shadow-xl flex flex-col items-center justify-center w-full max-w-[210px]">
+              <div id="${containerId}" class="flex items-center justify-center min-w-[120px] min-h-[120px]"></div>
               <p class="text-[10px] font-mono font-bold text-zinc-800 mt-1.5">Escanear para acumular</p>
             </div>
+          </div>
+
+          <!-- 3. Reverso / textModulesData (Términos relegados) -->
+          <div class="pt-1 text-[10px] text-zinc-400 bg-black/25 p-2.5 rounded-xl border border-white/5 space-y-1">
+            <span class="font-bold text-zinc-300 block text-[9px] uppercase tracking-wider">\uD83D\uDCC4 textModulesData (Reverso del Pase):</span>
+            <p class="line-clamp-2 text-[10px] text-zinc-400 leading-tight">${terms || 'V\u00E1lido presentando este pase o c\u00F3digo QR en el establecimiento al momento del pago.'}</p>
           </div>
         </div>
 

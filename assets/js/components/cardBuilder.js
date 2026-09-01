@@ -808,27 +808,28 @@ export function renderCardBuilder(businessId) {
             </div>
           `}
 
-          <!-- 3. IMAGEN DE FRANJA / BANNER CENTRAL (HERO IMAGE - RATIO 3:1) -->
+          <!-- 3. IMAGEN DE FRANJA / BANNER CENTRAL (HERO IMAGE 16:9 & 3:1) -->
           <div class="glass-panel p-5 rounded-3xl space-y-4 border border-white/5">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
                 <h2 class="text-sm font-bold text-white flex items-center gap-2">
-                  <span>\uD83C\uDFDE\uFE0F</span> 3. Imagen de Fondo / Banner Central (Hero Image)
+                  <span>\uD83C\uDFDE\uFE0F</span> 3. Imagen de Fondo / Banner Central (Hero Image 16:9 & 3:1)
                 </h2>
-                <p class="text-[11px] text-zinc-400 mt-0.5">La franja visual que aparece en el centro de Apple y Google Wallet.</p>
+                <p class="text-[11px] text-zinc-400 mt-0.5">La identidad visual y franja que aparece en Apple Wallet y Google Wallet.</p>
               </div>              <span id="badge-banner-status" class="text-[10px] font-extrabold ${currentBranding.bg_image_url ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border">
-                ${currentBranding.bg_image_url ? 'Banner Personalizado' : 'Franja Autom\u00E1tica'}
+                ${currentBranding.bg_image_url ? 'Banner / Hero Activo' : 'Franja Autom\u00E1tica'}
               </span>
             </div>
 
-            <!-- Hero Image 3:1 Specs Helper Badge -->
+            <!-- Hero Image Specs Helper Badge -->
             <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-2 text-xs">
               <div class="flex items-center gap-2 font-bold text-sky-300">
-                <span>\uD83D\uDCD0</span> Especificaciones oficiales de Banner para Wallet:
+                <span>\uD83D\uDCD0</span> Especificaciones oficiales de Banner & Hero Image para Wallet:
               </div>
               <ul class="list-disc list-inside text-[11px] space-y-1 text-zinc-300">
-                <li><strong>Modo Autom\u00E1tico (Recomendado):</strong> Nuestro servidor genera la franja exacta en ratio 3:1 con las cajas de sellos o saldo de puntos y el icono de premio.</li>
-                <li><strong>Banner Personalizado:</strong> Si subes tu propia imagen, debe tener una <strong>proporci\u00F3n 3:1 horizontal</strong> (tama\u00F1o exacto: <code>1032 x 336 px</code> o <code>1125 x 432 px</code>). <em>(Si subes una foto vertical o cuadrada, el m\u00F3vil la recortar\u00E1 por el centro).</em></li>
+                <li><strong>Google Wallet:</strong> Utiliza el objeto <code>heroImage</code> en proporci\u00F3n <strong>16:9</strong> (<code>1032 x 580 px</code>) como dise\u00F1o principal integrado y <code>imageModulesData</code> para la cuadr\u00EDcula f\u00EDsica de sellos.</li>
+                <li><strong>Apple Wallet:</strong> Utiliza la franja <strong>3:1</strong> horizontal (<code>1032 x 336 px</code>).</li>
+                <li><strong>Modo Autom\u00E1tico (Recomendado):</strong> Nuestro backend genera autom\u00E1ticamente las im\u00E1genes exactas optimizadas para ambas plataformas con tu logo, colores oscuros (<code>hexBackgroundColor: #0D0D0D</code>) y sellos visuales.</li>
               </ul>
             </div>
 
@@ -836,7 +837,7 @@ export function renderCardBuilder(businessId) {
             <div class="space-y-3">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-zinc-300 flex items-center gap-1.5">
-                  <span>\uD83D\uDDBC\uFE0F</span> Banner Personalizado (Opcional - Ratio 3:1)
+                  <span>\uD83D\uDDBC\uFE0F</span> Banner Personalizado (Ratio 16:9 o 3:1)
                 </span>
                 <button type="button" id="btn-clear-bg-banner" class="${currentBranding.bg_image_url ? '' : 'hidden'} text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
                   <span>\u2715</span> Usar Franja Autom\u00E1tica
@@ -847,27 +848,27 @@ export function renderCardBuilder(businessId) {
                 <div id="box-bg-banner-preview" class="sm:col-span-4 h-24 rounded-2xl border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-1.5 relative">
                   ${currentBranding.bg_image_url ? `
                     <img id="img-bg-banner-preview" src="${currentBranding.bg_image_url}" class="w-full h-full object-cover rounded-xl" alt="banner preview">
-                    <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">3:1 Activo</span>
+                    <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">Hero Activo</span>
                   ` : `
                     <span class="text-lg text-sky-400 font-bold">\u2728</span>
-                    <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (3:1)</span>
+                    <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (16:9 / 3:1)</span>
                   `}
                 </div>
 
                 <div class="sm:col-span-8 space-y-3">
                   <div id="dropzone-bg-banner" class="border-2 border-dashed border-zinc-700 hover:border-sky-500 rounded-2xl p-3 text-center cursor-pointer transition bg-zinc-900/40 hover:bg-sky-500/5 group">
                     <p class="text-xs font-bold text-white group-hover:text-sky-400 transition flex items-center justify-center gap-1.5">
-                      <span>\u2912</span> Arrastra tu banner 3:1 aqu\u00ED o pulsa para subir
+                      <span>\u2912</span> Arrastra tu banner (16:9 o 3:1) aqu\u00ED o pulsa para subir
                     </p>
-                    <p class="text-[10px] text-zinc-500 mt-0.5">Tama\u00F1o exacto: 1032 x 336 px (PNG o JPG)</p>
+                    <p class="text-[10px] text-zinc-500 mt-0.5">Tama\u00F1o recomendado: 1032 x 580 px (16:9) o 1032 x 336 px (3:1)</p>
                     <div class="mt-2 flex justify-center">
                       <button type="button" id="btn-trigger-bg-banner-select" class="px-3.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
-                        <span>\uD83D\uDCC1</span> Seleccionar Banner (1032 x 336 px)
+                        <span>\uD83D\uDCC1</span> Seleccionar Imagen (16:9 o 3:1)
                       </button>
                     </div>
                   </div>
 
-                  <input type="url" id="input-bg-banner-url" value="${currentBranding.bg_image_url && !currentBranding.bg_image_url.startsWith('data:') ? currentBranding.bg_image_url : ''}" placeholder="O pegar enlace directo URL del Banner (https://...)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500 font-mono">
+                  <input type="url" id="input-bg-banner-url" value="${currentBranding.bg_image_url && !currentBranding.bg_image_url.startsWith('data:') ? currentBranding.bg_image_url : ''}" placeholder="O pegar enlace directo URL del Banner / Hero (https://...)" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500 font-mono">
                 </div>
               </div>
 
@@ -898,9 +899,10 @@ export function renderCardBuilder(businessId) {
 
               <!-- Fast Preset Sample Banners -->
               <div class="pt-2 border-t border-zinc-800/80">
-                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Banners de Muestra R\u00E1pida (3:1):</span>
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Banners de Muestra R\u00E1pida (16:9 & 3:1):</span>
                 <div class="flex flex-wrap gap-2">
-                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2615</span> Caf\u00E9 Gourmet</button>
+                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1032&h=580&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83D\uDCA8</span> Shisha / Lounge (16:9)</button>
+                  <button type="button" data-sample-banner="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2615</span> Caf\u00E9 Gourmet (3:1)</button>
                   <button type="button" data-sample-banner="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\u2702\uFE0F</span> Barber\u00EDa</button>
                   <button type="button" data-sample-banner="https://images.unsplash.com/photo-1550547660-d9450f859349?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83C\uDF54</span> Burger House</button>
                   <button type="button" data-sample-banner="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1032&h=336&fit=crop&q=80" class="btn-sample-banner px-2.5 py-1 rounded-lg text-xs bg-zinc-900 border border-zinc-800 hover:border-amber-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83C\uDF78</span> Cocteler\u00EDa</button>
@@ -1106,14 +1108,14 @@ export function renderCardBuilder(businessId) {
 
   const UPLOAD_REQUIREMENTS = {
     banner: {
-      label: 'Banner Horizontal 3:1',
+      label: 'Hero Image 16:9 / Banner 3:1',
       allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'],
       maxSizeBytes: 5 * 1024 * 1024,
       minWidth: 400,
       minHeight: 100,
-      minRatio: 2.2,
-      maxRatio: 4.0,
-      targetRatioText: 'horizontal panor\u00E1mica 3:1 (aprox. 1032 x 336 px o 1125 x 432 px)'
+      minRatio: 1.5,
+      maxRatio: 4.2,
+      targetRatioText: 'horizontal panor\u00E1mica (16:9 para Google Wallet [1032 x 580 px] o 3:1 para Apple Wallet [1032 x 336 px])'
     },
     logo: {
       label: 'Logotipo del Comercio',
