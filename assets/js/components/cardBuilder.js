@@ -27,32 +27,37 @@ export function renderCardBuilder(businessId) {
     allPrograms = [defaultProg];
   }
 
-  let activeProgram = allPrograms.find(p => p.active) || allPrograms[0] || {
-    id: 'prog_default',
-    name: 'Tarjeta Cliente Principal',
-    reward_name: 'Premio Especial',
-    stamps_required: 10,
-    points_required: 100,
-    card_type: 'points'
-  };
+  const lastActiveProgramId = localStorage.getItem(`vynta_last_active_program_${business?.id}`);
+  let activeProgram = (lastActiveProgramId && allPrograms.find(p => p.id === lastActiveProgramId))
+    || allPrograms.find(p => p.active)
+    || allPrograms[0]
+    || {
+      id: 'prog_default',
+      name: 'Tarjeta Cliente Principal',
+      reward_name: 'Premio Especial',
+      stamps_required: 10,
+      points_required: 100,
+      card_type: 'points'
+    };
 
   const container = document.createElement('div');
   container.className = 'flex flex-col h-full w-full space-y-3 min-w-0';
 
   let activeWalletMode = 'apple'; // 'apple' or 'google'
-  let currentLogoUrl = business?.logo_url || 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=128&auto=format&fit=crop&q=80';
+  let currentLogoUrl = activeProgram.branding?.logo_url || business?.logo_url || 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=128&auto=format&fit=crop&q=80';
 
   let currentBranding = {
+    logo_url: activeProgram.branding?.logo_url || null,
     primary_color: activeProgram.branding?.primary_color || business?.branding?.primary_color || '#0EA5E9',
     secondary_color: activeProgram.branding?.secondary_color || business?.branding?.secondary_color || '#0369A1',
     bg_gradient_from: activeProgram.branding?.bg_gradient_from || business?.branding?.bg_gradient_from || '#0F172A',
     bg_gradient_to: activeProgram.branding?.bg_gradient_to || business?.branding?.bg_gradient_to || '#020617',
-    bg_image_url: activeProgram.branding?.bg_image_url || business?.branding?.bg_image_url || null,
-    overlay_opacity: (activeProgram.branding?.overlay_opacity !== undefined) ? activeProgram.branding.overlay_opacity : (business?.branding?.overlay_opacity !== undefined ? business.branding.overlay_opacity : 0.70),
-    stamp_icon: activeProgram.branding?.stamp_icon || business?.branding?.stamp_icon || 'star',
-    stamp_completed_image: activeProgram.branding?.stamp_completed_image || activeProgram.branding?.stamp_custom_image || business?.branding?.stamp_completed_image || business?.branding?.stamp_custom_image || null,
-    stamp_uncompleted_image: activeProgram.branding?.stamp_uncompleted_image || business?.branding?.stamp_uncompleted_image || null,
-    stamp_custom_image: activeProgram.branding?.stamp_completed_image || activeProgram.branding?.stamp_custom_image || business?.branding?.stamp_completed_image || business?.branding?.stamp_custom_image || null,
+    bg_image_url: activeProgram.branding?.bg_image_url || null,
+    overlay_opacity: (activeProgram.branding?.overlay_opacity !== undefined) ? activeProgram.branding.overlay_opacity : 0.70,
+    stamp_icon: activeProgram.branding?.stamp_icon || 'star',
+    stamp_completed_image: activeProgram.branding?.stamp_completed_image || activeProgram.branding?.stamp_custom_image || null,
+    stamp_uncompleted_image: activeProgram.branding?.stamp_uncompleted_image || null,
+    stamp_custom_image: activeProgram.branding?.stamp_completed_image || activeProgram.branding?.stamp_custom_image || null,
     border_radius: activeProgram.branding?.border_radius || business?.branding?.border_radius || '24px',
     text_color: activeProgram.branding?.text_color || business?.branding?.text_color || '#FFFFFF'
   };
@@ -913,13 +918,13 @@ export function renderCardBuilder(businessId) {
           </div>
 
           <!-- 4. COLORES DE LA TARJETA (FONDO SÓLIDO Y ACENTOS) -->
-          <div class="glass-panel p-5 rounded-3xl space-y-4 border border-white/5">
+          <div class="glass-panel p-5 rounded-3xl space-y-5 border border-white/5">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div>
                 <h2 class="text-sm font-bold text-white flex items-center gap-2">
-                  <span>\uD83C\uDFA8</span> 4. Colores de la Tarjeta (Fondo S\u00F3lido & Acentos)
+                  <span>🎨</span> 4. Colores de la Tarjeta (Fondo Sólido & Acentos)
                 </h2>
-                <p class="text-[11px] text-zinc-400 mt-0.5">Apple Wallet y Google Wallet aplican un color s\u00F3lido al cuerpo del pase.</p>
+                <p class="text-[11px] text-zinc-400 mt-0.5">Apple Wallet y Google Wallet aplican un color sólido al cuerpo del pase.</p>
               </div>
               <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
                 Alto Contraste
@@ -929,53 +934,123 @@ export function renderCardBuilder(businessId) {
             <!-- Solid Colors Guidelines Helper -->
             <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5 text-xs">
               <div class="flex items-center gap-1.5 font-bold text-sky-300">
-                <span>\uD83C\uDFA8</span> Reglas de Color para Google Wallet & Apple Wallet:
+                <span>🎨</span> Reglas de Color para Google Wallet & Apple Wallet:
               </div>
               <ul class="list-disc list-inside text-[11px] space-y-0.5 text-zinc-300">
-                <li><strong>Regla de oro:</strong> Google Wallet no permite im\u00E1genes completas de fondo ni degradados en el cuerpo de la tarjeta. Debe ser un <strong>color hexadecimal liso</strong> (ej: <code>#0D0D0D</code>, <code>#000000</code>).</li>
-                <li><strong>Contraste inteligente:</strong> Google cambiar\u00E1 autom\u00E1ticamente el color del texto a blanco o negro para garantizar m\u00E1xima legibilidad.</li>
-                <li><strong>Color de Acento:</strong> Destacar\u00E1 sellos activos, progreso num\u00E9rico e iconos.</li>
+                <li><strong>Regla de oro:</strong> Google Wallet no permite imágenes completas de fondo ni degradados en el cuerpo de la tarjeta. Debe ser un <strong>color hexadecimal liso</strong> (ej: <code>#0D0D0D</code>, <code>#000000</code>).</li>
+                <li><strong>Contraste inteligente:</strong> Google cambiará automáticamente el color del texto a blanco o negro para garantizar máxima legibilidad.</li>
+                <li><strong>Color de Acento:</strong> Destacará sellos activos, progreso numérico e iconos.</li>
               </ul>
             </div>
             
+            <!-- Dual Color Selectors (Free Spectrum Picker + Hex Text Input) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[11px] font-bold text-zinc-300 mb-1">Color de Fondo S\u00F3lido (Cuerpo de la Tarjeta)</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="input-bg-from" value="${currentBranding.bg_gradient_from || '#0F172A'}" class="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-0">
-                  <input type="text" id="text-bg-from" value="${currentBranding.bg_gradient_from || '#0F172A'}" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono text-white font-bold">
+              <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-zinc-200">Color de Fondo Sólido (Cuerpo)</label>
+                  <span class="text-[10px] font-mono text-zinc-400 font-bold" id="badge-bg-hex">${currentBranding.bg_gradient_from || '#0F172A'}</span>
                 </div>
+                <div class="flex items-center gap-2.5">
+                  <div class="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-white/20 shadow-md shrink-0 cursor-pointer">
+                    <input type="color" id="input-bg-from" value="${currentBranding.bg_gradient_from || '#0F172A'}" class="absolute -top-3 -left-3 w-16 h-16 cursor-pointer bg-transparent border-0">
+                  </div>
+                  <input type="text" id="text-bg-from" maxlength="7" value="${currentBranding.bg_gradient_from || '#0F172A'}" class="w-full bg-zinc-950 border border-zinc-700 hover:border-zinc-500 rounded-xl px-3 py-2 text-xs font-mono text-white font-bold focus:outline-none focus:border-sky-500 uppercase">
+                </div>
+                <p class="text-[10px] text-zinc-400">Toca el recuadro para abrir el selector libre de tonalidades o escribe el código HEX.</p>
               </div>
 
-              <div>
-                <label class="block text-[11px] font-bold text-zinc-300 mb-1">Color Principal / Acento (Sellos, Puntos, Etiquetas)</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="input-primary-color" value="${currentBranding.primary_color}" class="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-0">
-                  <input type="text" id="text-primary-color" value="${currentBranding.primary_color}" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono text-white font-bold">
+              <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-zinc-200">Color Principal / Acento (Sellos & Iconos)</label>
+                  <span class="text-[10px] font-mono text-zinc-400 font-bold" id="badge-primary-hex">${currentBranding.primary_color || '#0EA5E9'}</span>
                 </div>
+                <div class="flex items-center gap-2.5">
+                  <div class="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-white/20 shadow-md shrink-0 cursor-pointer">
+                    <input type="color" id="input-primary-color" value="${currentBranding.primary_color || '#0EA5E9'}" class="absolute -top-3 -left-3 w-16 h-16 cursor-pointer bg-transparent border-0">
+                  </div>
+                  <input type="text" id="text-primary-color" maxlength="7" value="${currentBranding.primary_color || '#0EA5E9'}" class="w-full bg-zinc-950 border border-zinc-700 hover:border-zinc-500 rounded-xl px-3 py-2 text-xs font-mono text-white font-bold focus:outline-none focus:border-sky-500 uppercase">
+                </div>
+                <p class="text-[10px] text-zinc-400">Toca el recuadro para abrir el selector libre de tonalidades o escribe el código HEX.</p>
               </div>
             </div>
 
-            <!-- Predefined Solid Theme Presets -->
+            <!-- CUADRICULA DE COLORES Y TONALIDADES (PALETTE MATRIX) -->
+            <div class="space-y-3 pt-2 border-t border-zinc-800">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span>▦</span> Cuadrícula de Colores y Tonalidades:
+                </span>
+                <span class="text-[10px] text-zinc-400">Haz clic en cualquier tonalidad para aplicarla</span>
+              </div>
+
+              <!-- Tabs to switch target (Fondo vs Acento) -->
+              <div class="flex items-center gap-2 p-1 bg-zinc-900/80 rounded-xl border border-zinc-800 w-fit">
+                <button type="button" class="btn-color-target-tab px-3 py-1 rounded-lg text-xs font-bold transition bg-sky-500 text-black shadow-sm cursor-pointer" data-target-type="bg">
+                  Aplicar a Fondo Tarjeta
+                </button>
+                <button type="button" class="btn-color-target-tab px-3 py-1 rounded-lg text-xs font-bold transition text-zinc-400 hover:text-white cursor-pointer" data-target-type="accent">
+                  Aplicar a Acento / Sellos
+                </button>
+              </div>
+
+              <!-- Color Palette Swatch Rows -->
+              <div class="space-y-2.5 p-3 rounded-2xl bg-zinc-950/70 border border-zinc-800/90">
+                ${[
+                  {
+                    category: 'Neutros & Oscuros (Recomendados Wallet)',
+                    colors: ['#000000', '#0A0A0A', '#0D0D0D', '#12141C', '#0F172A', '#1E293B', '#334155', '#18181B', '#27272A', '#3F3F46', '#52525B', '#71717A', '#A1A1AA', '#D4D4D8', '#FFFFFF']
+                  },
+                  {
+                    category: 'Azules, Cian & Índigos',
+                    colors: ['#02457A', '#0284C7', '#0EA5E9', '#38BDF8', '#7DD3FC', '#1D4ED8', '#2563EB', '#3B82F6', '#60A5FA', '#1E1B4B', '#3730A3', '#4F46E5', '#6366F1', '#818CF8', '#06B6D4']
+                  },
+                  {
+                    category: 'Esmeraldas & Verdes',
+                    colors: ['#06281E', '#064E3B', '#047857', '#059669', '#10B981', '#34D399', '#6EE7B7', '#14532D', '#16A34A', '#22C55E', '#4ADE80', '#65A30D', '#84CC16', '#A3E635', '#14B8A6']
+                  },
+                  {
+                    category: 'Dorados, Ámbar & Naranjas',
+                    colors: ['#1C160C', '#78350F', '#92400E', '#B45309', '#D97706', '#F59E0B', '#FBBF24', '#FCD34D', '#854D0E', '#CA8A04', '#EAB308', '#FACC15', '#9A3412', '#EA580C', '#F97316']
+                  },
+                  {
+                    category: 'Rojos, Rosas & Púrpuras',
+                    colors: ['#450A0A', '#7F1D1D', '#991B1B', '#DC2626', '#EF4444', '#F87171', '#881337', '#BE123C', '#E11D48', '#F43F5E', '#FB7185', '#1E1035', '#581C87', '#9333EA', '#A855F7', '#8B5CF6']
+                  }
+                ].map(group => `
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">${group.category}</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      ${group.colors.map(hex => `
+                        <button type="button" data-color="${hex}" class="btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-white/10 hover:scale-110 hover:border-white/60 hover:shadow-lg transition cursor-pointer relative group/swatch" style="background-color: ${hex};" title="${hex}">
+                          <span class="sr-only">${hex}</span>
+                        </button>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Predefined Full Theme Combinations -->
             <div class="pt-2 border-t border-zinc-800/80">
-              <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2">Colores S\u00F3lidos Recomendados para Wallet:</span>
+              <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-2">Combinaciones Temáticas Listas para Wallet:</span>
               <div class="flex flex-wrap gap-2">
-                <button type="button" data-theme="slate" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-slate-900 border border-sky-500/40 text-sky-300 hover:bg-slate-800 font-bold transition flex items-center gap-1.5">
+                <button type="button" data-theme="slate" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-slate-900 border border-sky-500/40 text-sky-300 hover:bg-slate-800 font-bold transition flex items-center gap-1.5 cursor-pointer">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#0EA5E9]"></span> Negro Grafito (Slate)
                 </button>
-                <button type="button" data-theme="cafe" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-stone-900 border border-amber-500/40 text-amber-300 hover:bg-stone-800 font-bold transition flex items-center gap-1.5">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span> Obsidiana \u00C1mbar
+                <button type="button" data-theme="cafe" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-stone-900 border border-amber-500/40 text-amber-300 hover:bg-stone-800 font-bold transition flex items-center gap-1.5 cursor-pointer">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span> Obsidiana Ámbar
                 </button>
-                <button type="button" data-theme="emerald" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-emerald-950 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 font-bold transition flex items-center gap-1.5">
+                <button type="button" data-theme="emerald" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-emerald-950 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900 font-bold transition flex items-center gap-1.5 cursor-pointer">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span> Esmeralda Profundo
                 </button>
-                <button type="button" data-theme="purple" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-purple-950 border border-purple-500/40 text-purple-300 hover:bg-purple-900 font-bold transition flex items-center gap-1.5">
-                  <span class="w-2.5 h-2.5 rounded-full bg-[#8B5CF6]"></span> P\u00FArpura Nocturno
+                <button type="button" data-theme="purple" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-purple-950 border border-purple-500/40 text-purple-300 hover:bg-purple-900 font-bold transition flex items-center gap-1.5 cursor-pointer">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#8B5CF6]"></span> Púrpura Nocturno
                 </button>
-                <button type="button" data-theme="navy" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-indigo-950 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900 font-bold transition flex items-center gap-1.5">
+                <button type="button" data-theme="navy" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-indigo-950 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900 font-bold transition flex items-center gap-1.5 cursor-pointer">
                   <span class="w-2.5 h-2.5 rounded-full bg-[#6366F1]"></span> Azul Noche Indigo
                 </button>
-                <button type="button" data-theme="pureblack" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-black border border-zinc-700 text-white hover:bg-zinc-900 font-bold transition flex items-center gap-1.5">
+                <button type="button" data-theme="pureblack" class="btn-theme-preset px-3 py-1.5 rounded-xl text-xs bg-black border border-zinc-700 text-white hover:bg-zinc-900 font-bold transition flex items-center gap-1.5 cursor-pointer">
                   <span class="w-2.5 h-2.5 rounded-full bg-white"></span> Negro Azabache
                 </button>
               </div>
@@ -1011,6 +1086,19 @@ export function renderCardBuilder(businessId) {
               Así se verá exactamente la tarjeta en la app Apple Wallet del móvil.
             </p>
           </div>
+        </div>
+      </div>
+
+      <!-- STICKY BOTTOM ACTION BAR -->
+      <div class="sticky bottom-0 z-30 -mx-2 sm:-mx-4 p-3 bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800 flex items-center justify-between gap-3 shadow-2xl rounded-b-3xl">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+          <span class="text-xs font-bold text-white truncate">Tarjeta Activa: <strong class="text-sky-400">${cardName}</strong></span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="btn-save-branding-bottom" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-extrabold text-xs shadow-lg transition transform hover:scale-[1.02] flex items-center gap-2 cursor-pointer">
+            <span>✔</span> Guardar Tarjeta
+          </button>
         </div>
       </div>
 
@@ -1307,7 +1395,7 @@ export function renderCardBuilder(businessId) {
       if (updated) activeProgram = updated;
     }
 
-    const boxPreview = container.querySelector('#box-banner-preview');
+    const boxPreview = container.querySelector('#box-bg-banner-preview') || container.querySelector('#box-banner-preview');
     const badgeStatus = container.querySelector('#badge-banner-status');
     const btnClear = container.querySelector('#btn-clear-bg-banner');
     const inputUrl = container.querySelector('#input-bg-banner-url');
@@ -1316,19 +1404,19 @@ export function renderCardBuilder(businessId) {
       if (imageUrl) {
         boxPreview.innerHTML = `
           <img id="img-bg-banner-preview" src="${imageUrl}" class="w-full h-full object-cover rounded-xl" alt="banner preview">
-          <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">3:1 Activo</span>
+          <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">Hero Activo</span>
         `;
       } else {
         boxPreview.innerHTML = `
           <span class="text-lg text-sky-400 font-bold">\u2728</span>
-          <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (3:1)</span>
+          <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (16:9 / 3:1)</span>
         `;
       }
     }
 
     if (badgeStatus) {
       badgeStatus.className = `text-[10px] font-extrabold ${imageUrl ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border`;
-      badgeStatus.textContent = imageUrl ? 'Banner Personalizado' : 'Franja Autom\u00E1tica';
+      badgeStatus.textContent = imageUrl ? 'Banner / Hero Activo' : 'Franja Autom\u00E1tica';
     }
 
     if (btnClear) {
@@ -1579,6 +1667,7 @@ export function renderCardBuilder(businessId) {
         const selectedId = e.target.value;
         const found = allPrograms.find(p => p.id === selectedId);
         if (found) {
+          localStorage.setItem(`vynta_last_active_program_${business?.id}`, selectedId);
           activeProgram = found;
           cardName = found.name || 'Tarjeta Digital';
           totalStamps = Number(found.stamps_required) || 10;
@@ -1610,7 +1699,19 @@ export function renderCardBuilder(businessId) {
             border_radius: found.branding?.border_radius || business?.branding?.border_radius || '24px',
             text_color: found.branding?.text_color || business?.branding?.text_color || '#FFFFFF'
           };
+
+          const leftCol = container.querySelector('.lg\\:col-span-7');
+          const leftScroll = leftCol ? leftCol.scrollTop : 0;
+          const pageScroll = window.scrollY || document.documentElement.scrollTop || 0;
+
           renderForm();
+
+          requestAnimationFrame(() => {
+            const newLeftCol = container.querySelector('.lg\\:col-span-7');
+            if (newLeftCol) newLeftCol.scrollTop = leftScroll;
+            window.scrollTo({ top: pageScroll, behavior: 'instant' });
+          });
+
           toast.success(`Editando tarjeta: ${found.name}`);
         }
       });
@@ -2317,43 +2418,111 @@ export function renderCardBuilder(businessId) {
       });
     }
 
-    // --- COLOR INPUTS (SOLID BACKGROUND & ACCENTS) ---
+    // --- COLOR INPUTS & PALETTE GRID LISTENERS ---
     const primaryInput = container.querySelector('#input-primary-color');
     const primaryText = container.querySelector('#text-primary-color');
     const bgFromInput = container.querySelector('#input-bg-from');
     const bgFromText = container.querySelector('#text-bg-from');
+    const badgeBgHex = container.querySelector('#badge-bg-hex');
+    const badgePrimaryHex = container.querySelector('#badge-primary-hex');
+
+    let activeColorTarget = 'bg'; // 'bg' or 'accent'
+
+    function syncColorState() {
+      if (activeProgram?.id) {
+        activeProgram.branding = {
+          ...activeProgram.branding,
+          ...currentBranding
+        };
+        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
+      }
+      updatePreview();
+    }
 
     if (primaryInput && primaryText) {
       primaryInput.addEventListener('input', (e) => {
-        currentBranding.primary_color = e.target.value;
-        primaryText.value = e.target.value;
-        updatePreview();
+        const val = e.target.value.toUpperCase();
+        currentBranding.primary_color = val;
+        primaryText.value = val;
+        if (badgePrimaryHex) badgePrimaryHex.textContent = val;
+        syncColorState();
       });
       primaryText.addEventListener('input', (e) => {
-        currentBranding.primary_color = e.target.value;
-        primaryInput.value = e.target.value;
-        updatePreview();
+        let val = e.target.value.trim();
+        if (!val.startsWith('#') && val.length > 0) val = '#' + val;
+        currentBranding.primary_color = val;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+          primaryInput.value = val;
+        }
+        if (badgePrimaryHex) badgePrimaryHex.textContent = val.toUpperCase();
+        syncColorState();
       });
     }
 
     if (bgFromInput && bgFromText) {
       bgFromInput.addEventListener('input', (e) => {
-        currentBranding.bg_gradient_from = e.target.value;
-        currentBranding.bg_gradient_to = e.target.value;
-        bgFromText.value = e.target.value;
-        updatePreview();
+        const val = e.target.value.toUpperCase();
+        currentBranding.bg_gradient_from = val;
+        currentBranding.bg_gradient_to = val;
+        bgFromText.value = val;
+        if (badgeBgHex) badgeBgHex.textContent = val;
+        syncColorState();
       });
       bgFromText.addEventListener('input', (e) => {
-        currentBranding.bg_gradient_from = e.target.value;
-        currentBranding.bg_gradient_to = e.target.value;
-        bgFromInput.value = e.target.value;
-        updatePreview();
+        let val = e.target.value.trim();
+        if (!val.startsWith('#') && val.length > 0) val = '#' + val;
+        currentBranding.bg_gradient_from = val;
+        currentBranding.bg_gradient_to = val;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+          bgFromInput.value = val;
+        }
+        if (badgeBgHex) badgeBgHex.textContent = val.toUpperCase();
+        syncColorState();
       });
     }
 
+    // Color target tabs (Fondo vs Acento)
+    container.querySelectorAll('.btn-color-target-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        activeColorTarget = tab.dataset.targetType;
+        container.querySelectorAll('.btn-color-target-tab').forEach(t => {
+          if (t.dataset.targetType === activeColorTarget) {
+            t.className = 'btn-color-target-tab px-3 py-1 rounded-lg text-xs font-bold transition bg-sky-500 text-black shadow-sm cursor-pointer';
+          } else {
+            t.className = 'btn-color-target-tab px-3 py-1 rounded-lg text-xs font-bold transition text-zinc-400 hover:text-white cursor-pointer';
+          }
+        });
+      });
+    });
+
+    // Swatch clicks from the Cuadrícula
+    container.querySelectorAll('.btn-color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', (e) => {
+        e.preventDefault();
+        const hex = swatch.dataset.color.toUpperCase();
+        if (activeColorTarget === 'bg') {
+          currentBranding.bg_gradient_from = hex;
+          currentBranding.bg_gradient_to = hex;
+          if (bgFromInput) bgFromInput.value = hex;
+          if (bgFromText) bgFromText.value = hex;
+          if (badgeBgHex) badgeBgHex.textContent = hex;
+          toast.success(`Color de fondo aplicado: ${hex}`);
+        } else {
+          currentBranding.primary_color = hex;
+          if (primaryInput) primaryInput.value = hex;
+          if (primaryText) primaryText.value = hex;
+          if (badgePrimaryHex) badgePrimaryHex.textContent = hex;
+          toast.success(`Color de acento aplicado: ${hex}`);
+        }
+        syncColorState();
+      });
+    });
+
     // Preset solid themes tailored for Apple & Google Wallet
     container.querySelectorAll('.btn-theme-preset').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const theme = btn.dataset.theme;
         if (theme === 'slate') {
           currentBranding.primary_color = '#0EA5E9';
@@ -2389,46 +2558,53 @@ export function renderCardBuilder(businessId) {
 
         if (primaryInput) primaryInput.value = currentBranding.primary_color;
         if (primaryText) primaryText.value = currentBranding.primary_color;
+        if (badgePrimaryHex) badgePrimaryHex.textContent = currentBranding.primary_color;
         if (bgFromInput) bgFromInput.value = currentBranding.bg_gradient_from;
         if (bgFromText) bgFromText.value = currentBranding.bg_gradient_from;
-        updatePreview();
+        if (badgeBgHex) badgeBgHex.textContent = currentBranding.bg_gradient_from;
+        syncColorState();
       });
     });
 
-    // --- SAVE BUTTON ---
-    const btnSave = container.querySelector('#btn-save-branding');
-    if (btnSave) {
-      btnSave.addEventListener('click', () => {
-        const updates = {
-          name: cardName,
-          stamps_required: totalStamps,
-          points_required: pointsRequired,
-          points_ratio: pointsRatio,
-          reward_name: rewardName,
-          promo_benefit: promoBenefit,
-          valid_until: validUntil,
-          terms: terms,
-          discount_type: discountType,
-          discount_value: discountValue,
-          coupon_code: couponCode,
-          min_spend: minSpend,
-          branding: {
-            ...currentBranding,
-            logo_url: currentLogoUrl
-          }
-        };
-
-        if (activeProgram?.id) {
-          loyaltyService.updateProgram(business.id, activeProgram.id, updates, session);
+    // --- SAVE BUTTON LOGIC (TOP & BOTTOM) ---
+    function handleSaveProgram(e) {
+      if (e) e.preventDefault();
+      const updates = {
+        name: cardName,
+        stamps_required: totalStamps,
+        points_required: pointsRequired,
+        points_ratio: pointsRatio,
+        reward_name: rewardName,
+        promo_benefit: promoBenefit,
+        valid_until: validUntil,
+        terms: terms,
+        discount_type: discountType,
+        discount_value: discountValue,
+        coupon_code: couponCode,
+        min_spend: minSpend,
+        branding: {
+          ...currentBranding,
+          logo_url: currentLogoUrl
         }
+      };
 
-        allPrograms = loyaltyService.getAllPrograms(business.id) || [];
-        activeProgram = allPrograms.find(p => p.id === activeProgram.id) || activeProgram;
+      if (activeProgram?.id) {
+        loyaltyService.updateProgram(business.id, activeProgram.id, updates, session);
+        localStorage.setItem(`vynta_last_active_program_${business?.id}`, activeProgram.id);
+      }
 
-        toast.fireConfetti();
-        toast.success(`\u00A1Tarjeta "${cardName}" guardada correctamente!`);
-      });
+      allPrograms = loyaltyService.getAllPrograms(business.id) || [];
+      activeProgram = allPrograms.find(p => p.id === activeProgram.id) || activeProgram;
+
+      toast.fireConfetti();
+      toast.success(`\u00A1Tarjeta "${cardName}" guardada correctamente!`);
     }
+
+    const btnSave = container.querySelector('#btn-save-branding');
+    if (btnSave) btnSave.addEventListener('click', handleSaveProgram);
+
+    const btnSaveBottom = container.querySelector('#btn-save-branding-bottom');
+    if (btnSaveBottom) btnSaveBottom.addEventListener('click', handleSaveProgram);
 
     // Render Quick Selection libraries for all categories
     ['logo', 'stamp_completed', 'stamp_uncompleted', 'banner'].forEach(cat => renderQuickFiles(cat));

@@ -44,17 +44,6 @@ class AppRouter {
         syncService.pullFromCloud();
         syncService.fetchRecentEvents();
       } catch (e) {}
-      const hash = window.location.hash || '';
-      if (hash.startsWith('#/admin') || hash.startsWith('#/vynta') || hash === '#/login') {
-        this.handleRoute();
-      }
-    });
-
-    db.subscribe('change', () => {
-      const hash = window.location.hash || '';
-      if (hash.startsWith('#/admin') || hash.startsWith('#/vynta') || hash === '#/login') {
-        this.handleRoute();
-      }
     });
 
     // Execute route immediately so app renders right away!
