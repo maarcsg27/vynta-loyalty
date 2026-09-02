@@ -335,7 +335,7 @@ export const walletService = {
       organizationName: business?.name || 'VYNTA Loyalty',
       cardTitle: `${business?.name || 'Comercio'} • ${program?.name || 'Tarjeta Digital'}`,
       description: `${program?.name || 'Tarjeta de Fidelización'} • ${business?.name || ''}`,
-      passType: 'storeCard',
+      passType: 'coupon', // CRITICAL: 'coupon' displays the strip image prominently in Apple Wallet! 'storeCard' ignores stripImage on iOS!
       backgroundColor: hexToRgb(bgColor),
       foregroundColor: hexToRgb(fgColor),
       labelColor: hexToRgb(primaryColor),
@@ -353,12 +353,11 @@ export const walletService = {
       googleWalletClass,
       googleWalletObject,
       logoImage: logoUrl,
-      iconImage: branding.stamp_completed_image || branding.stamp_custom_image || logoUrl,
+      iconImage: (branding.stamp_completed_image && branding.stamp_completed_image.startsWith('http')) ? branding.stamp_completed_image : logoUrl,
       backgroundImage: stripImage3x1,
       stripImage: stripImage3x1,
       heroImage: heroImage16x9,
       programLogo: logoUrl,
-      colorPreset: colorPreset,
       sharingProhibited: false
     };
 

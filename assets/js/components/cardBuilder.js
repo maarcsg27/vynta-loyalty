@@ -2659,8 +2659,14 @@ export function renderCardBuilder(businessId) {
         localStorage.setItem(`vynta_last_active_program_${business?.id}`, activeProgram.id);
       }
 
+      // Also sync business level branding fallback
+      if (business?.id && updates.branding) {
+        businessService.updateBranding(business.id, updates.branding, session);
+      }
+
       allPrograms = loyaltyService.getAllPrograms(business.id) || [];
       activeProgram = allPrograms.find(p => p.id === activeProgram.id) || activeProgram;
+      currentBranding = { ...activeProgram.branding };
 
       toast.fireConfetti();
       toast.success(`\u00A1Tarjeta "${cardName}" guardada correctamente!`);

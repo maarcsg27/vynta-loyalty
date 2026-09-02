@@ -7,7 +7,11 @@ import { syncService } from './syncService.js';
 import { generateUUID } from '../db/schema.js';
 
 export const loyaltyService = {
-  getProgram(businessId) {
+  getProgram(businessId, programId = null) {
+    if (programId) {
+      const found = this.getProgramById(businessId, programId);
+      if (found) return found;
+    }
     const programs = db.getTable('loyalty_programs', businessId);
     return programs.find(p => p.active) || programs[0] || null;
   },

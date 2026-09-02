@@ -190,9 +190,17 @@ export function renderCustomerPortalView(token) {
     return container;
   }
 
-  const business = businessService.getById(card.business_id) || businessService.getAll()[0];
-  const customer = customerService.getById(card.business_id, card.customer_id) || { first_name: 'Cliente VIP', last_name: '' };
-  const program = (card.loyalty_program_id ? loyaltyService.getProgram(card.business_id, card.loyalty_program_id) : null) || loyaltyService.getProgram(card.business_id);
+  let business = businessService.getById(card.business_id) || businessService.getAll()[0];
+  let customer = customerService.getById(card.business_id, card.customer_id) || { first_name: 'Cliente VIP', last_name: '' };
+  let program = (card.loyalty_program_id ? loyaltyService.getProgram(card.business_id, card.loyalty_program_id) : null) || loyaltyService.getProgram(card.business_id);
+
+  function getFreshState() {
+    const liveCard = customerService.getCardByToken(token) || card;
+    const liveBiz = (liveCard?.business_id ? businessService.getById(liveCard.business_id) : null) || business;
+    const liveCust = (liveCard?.customer_id ? customerService.getById(liveCard.business_id, liveCard.customer_id) : null) || customer;
+    const liveProg = (liveCard?.loyalty_program_id ? loyaltyService.getProgram(liveCard.business_id, liveCard.loyalty_program_id) : null) || loyaltyService.getProgram(liveCard?.business_id) || program;
+    return { business: liveBiz, customer: liveCust, card: liveCard, program: liveProg };
+  }
 
   container.innerHTML = `
     <div class="w-full flex items-center justify-between px-2 pt-1 text-xs text-zinc-400">
@@ -267,6 +275,7 @@ export function renderCustomerPortalView(token) {
 
   function updateCustomerTab(tab) {
     activeWalletTab = tab;
+    const fresh = getFreshState();
     const cardBox = container.querySelector('#customer-card-box');
     const btnApp = container.querySelector('#btn-tab-apple');
     const btnGoo = container.querySelector('#btn-tab-google');
@@ -275,25 +284,25 @@ export function renderCustomerPortalView(token) {
       btnApp.className = 'py-2 px-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 bg-white text-black shadow-md cursor-pointer';
       btnGoo.className = 'py-2 px-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 text-zinc-400 hover:text-white cursor-pointer';
       cardBox.innerHTML = renderAppleWalletPassHTML({
-        business,
-        customer,
-        card,
-        program,
+        business: fresh.business,
+        customer: fresh.customer,
+        card: fresh.card,
+        program: fresh.program,
         containerId: 'customer-portal-qr'
       });
     } else {
       btnGoo.className = 'py-2 px-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 bg-white text-black shadow-md cursor-pointer';
       btnApp.className = 'py-2 px-3 rounded-xl font-bold transition flex items-center justify-center gap-1.5 text-zinc-400 hover:text-white cursor-pointer';
       cardBox.innerHTML = renderGoogleWalletPassHTML({
-        business,
-        customer,
-        card,
-        program,
+        business: fresh.business,
+        customer: fresh.customer,
+        card: fresh.card,
+        program: fresh.program,
         containerId: 'customer-portal-qr'
       });
     }
     setTimeout(() => {
-      initQRCode('customer-portal-qr', `${window.location.origin}${window.location.pathname}#/c/${card.secure_token}`);
+      initQRCode('customer-portal-qr', `${window.location.origin}${window.location.pathname}#/c/${fresh.card.secure_token}`);
     }, 40);
   }
 
@@ -312,10 +321,16 @@ export function renderCustomerPortalView(token) {
     btnApple.innerHTML = `<span class="animate-spin text-sm">↻</span> Conectando con Apple Wallet...`;
 
     try {
-      const passData = await walletService.generatePass({ business, customer, card, program });
+      const fresh = getFreshState();
+      const passData = await walletService.generatePass({
+        business: fresh.business,
+        customer: fresh.customer,
+        card: fresh.card,
+        program: fresh.program
+      });
       toast.fireConfetti();
       toast.success('¡Pase de Apple Wallet listo!');
-      walletService.openApplePass(passData, `${business.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-pase.pkpass`);
+      walletService.openApplePass(passData, `${fresh.business.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-pase.pkpass`);
     } catch (err) {
       toast.error(err.message || 'Error al conectar con WalletWallet API');
     } finally {
@@ -332,7 +347,13 @@ export function renderCustomerPortalView(token) {
     btnGoogle.innerHTML = `<span class="animate-spin text-sm">↻</span> Conectando con Google Wallet...`;
 
     try {
-      const passData = await walletService.generatePass({ business, customer, card, program });
+      const fresh = getFreshState();
+      const passData = await walletService.generatePass({
+        business: fresh.business,
+        customer: fresh.customer,
+        card: fresh.card,
+        program: fresh.program
+      });
       toast.fireConfetti();
       toast.success('¡Enlace de Google Wallet listo!');
       walletService.openGooglePass(passData);
