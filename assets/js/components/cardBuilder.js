@@ -1204,53 +1204,50 @@ export function renderCardBuilder(businessId) {
         </div>
       </div>
     `;
-
-    bindEvents();
-    updatePreview();
   }
 
   const UPLOAD_REQUIREMENTS = {
-    banner: {
-      label: 'Hero Image 16:9 / Banner 3:1',
-      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'],
-      maxSizeBytes: 5 * 1024 * 1024,
-      minWidth: 400,
-      minHeight: 100,
-      minRatio: 1.5,
-      maxRatio: 4.2,
-      targetRatioText: 'horizontal panor\u00E1mica (16:9 para Google Wallet [1032 x 580 px] o 3:1 para Apple Wallet [1032 x 336 px])'
-    },
-    logo: {
-      label: 'Logotipo del Comercio',
-      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'],
-      maxSizeBytes: 4 * 1024 * 1024,
-      minWidth: 48,
-      minHeight: 48,
-      minRatio: 0.35,
-      maxRatio: 2.8,
-      targetRatioText: 'cuadrada o est\u00E1ndar (aprox. 512 x 512 px)'
-    },
-    stamp_completed: {
-      label: 'Sello Completado (Activo)',
-      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'],
-      maxSizeBytes: 3 * 1024 * 1024,
-      minWidth: 24,
-      minHeight: 24,
-      minRatio: 0.65,
-      maxRatio: 1.55,
-      targetRatioText: 'cuadrada 1:1 con fondo transparente (aprox. 256 x 256 px)'
-    },
-    stamp_uncompleted: {
-      label: 'Sello Sin Completar (Vac\u00EDo)',
-      allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'],
-      maxSizeBytes: 3 * 1024 * 1024,
-      minWidth: 24,
-      minHeight: 24,
-      minRatio: 0.65,
-      maxRatio: 1.55,
-      targetRatioText: 'cuadrada 1:1 con fondo transparente (aprox. 256 x 256 px)'
-    }
-  };
+      banner: {
+        label: 'Hero Image 16:9 / Banner 3:1',
+        allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'],
+        maxSizeBytes: 10 * 1024 * 1024,
+        minWidth: 50,
+        minHeight: 20,
+        minRatio: 0.2,
+        maxRatio: 6.0,
+        targetRatioText: 'horizontal panorámica'
+      },
+      logo: {
+        label: 'Logotipo del Comercio',
+        allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp', 'image/gif'],
+        maxSizeBytes: 10 * 1024 * 1024,
+        minWidth: 10,
+        minHeight: 10,
+        minRatio: 0.1,
+        maxRatio: 10.0,
+        targetRatioText: 'cuadrada o estándar'
+      },
+      stamp_completed: {
+        label: 'Sello Completado (Activo)',
+        allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp', 'image/gif'],
+        maxSizeBytes: 10 * 1024 * 1024,
+        minWidth: 10,
+        minHeight: 10,
+        minRatio: 0.1,
+        maxRatio: 10.0,
+        targetRatioText: 'cuadrada o estándar'
+      },
+      stamp_uncompleted: {
+        label: 'Sello Sin Completar (Vacío)',
+        allowedTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp', 'image/gif'],
+        maxSizeBytes: 10 * 1024 * 1024,
+        minWidth: 10,
+        minHeight: 10,
+        minRatio: 0.1,
+        maxRatio: 10.0,
+        targetRatioText: 'cuadrada o estándar'
+      }
+    };
 
   function showErrorNotice(category, title, detail) {
     const alertEl = container.querySelector(`#alert-${category}-error`);
@@ -1463,7 +1460,7 @@ export function renderCardBuilder(businessId) {
   function getQuickFiles(category) {
     try {
       const key = `vynta_quick_${category}_${business?.id || 'default'}`;
-      const raw = localStorage.getItem(key);
+      const raw = localStorage.getItem(key) || localStorage.getItem(`vynta_quick_${category}_global`);
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
@@ -1476,14 +1473,16 @@ export function renderCardBuilder(businessId) {
       const key = `vynta_quick_${category}_${business?.id || 'default'}`;
       let list = getQuickFiles(category);
       list = list.filter(item => item.url !== url);
+      const defaultName = category === 'banner' ? 'Banner' : category === 'logo' ? 'Logo' : category === 'stamp_uncompleted' ? 'Sello Vacío' : 'Sello Activo';
       list.unshift({
         id: 'qf_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
         url,
-        name: name || (category === 'banner' ? 'Banner' : category === 'logo' ? 'Logo' : 'Sello'),
+        name: name || defaultName,
         timestamp: Date.now()
       });
-      list = list.slice(0, 8);
+      list = list.slice(0, 12);
       localStorage.setItem(key, JSON.stringify(list));
+      localStorage.setItem(`vynta_quick_${category}_global`, JSON.stringify(list));
       renderQuickFiles(category);
     } catch (e) {
       console.warn('Could not save quick file:', e);
@@ -1678,6 +1677,38 @@ export function renderCardBuilder(businessId) {
     validateAndProcessImage(file, 'banner', callback);
   }
 
+  let activeColorTarget = 'bg'; // 'bg' or 'accent'
+
+  function syncColorState() {
+    currentBranding.primary_color = normalizeHex(currentBranding.primary_color, '#0EA5E9');
+    currentBranding.bg_gradient_from = normalizeHex(currentBranding.bg_gradient_from, '#0F172A');
+    currentBranding.bg_gradient_to = currentBranding.bg_gradient_from;
+
+    if (activeProgram?.id) {
+      activeProgram.branding = {
+        ...activeProgram.branding,
+        ...currentBranding,
+        primary_color: currentBranding.primary_color,
+        bg_gradient_from: currentBranding.bg_gradient_from,
+        bg_gradient_to: currentBranding.bg_gradient_from
+      };
+      loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
+    }
+
+    // Highlight active swatch in palette grid
+    const targetColor = activeColorTarget === 'bg' ? currentBranding.bg_gradient_from : currentBranding.primary_color;
+    container.querySelectorAll('.btn-color-swatch').forEach(sw => {
+      const isSelected = (sw.dataset.color || '').toUpperCase() === targetColor.toUpperCase();
+      if (isSelected) {
+        sw.className = 'btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 border-white ring-2 ring-sky-400 scale-110 shadow-xl transition cursor-pointer relative group/swatch z-10';
+      } else {
+        sw.className = 'btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-white/15 hover:scale-110 hover:border-white hover:shadow-lg transition cursor-pointer relative group/swatch';
+      }
+    });
+
+    updatePreview();
+  }
+
   function bindEvents() {
     // --- TOP CARD SWITCHER ---
     const selectCardToEdit = container.querySelector('#select-card-to-edit');
@@ -1723,7 +1754,7 @@ export function renderCardBuilder(businessId) {
           const leftScroll = leftCol ? leftCol.scrollTop : 0;
           const pageScroll = window.scrollY || document.documentElement.scrollTop || 0;
 
-          renderForm();
+          initBuilder();
 
           requestAnimationFrame(() => {
             const newLeftCol = container.querySelector('.lg\\:col-span-7');
@@ -2447,38 +2478,6 @@ export function renderCardBuilder(businessId) {
     const badgeBgHex = container.querySelector('#badge-bg-hex');
     const badgePrimaryHex = container.querySelector('#badge-primary-hex');
 
-    let activeColorTarget = 'bg'; // 'bg' or 'accent'
-
-    function syncColorState() {
-      currentBranding.primary_color = normalizeHex(currentBranding.primary_color, '#0EA5E9');
-      currentBranding.bg_gradient_from = normalizeHex(currentBranding.bg_gradient_from, '#0F172A');
-      currentBranding.bg_gradient_to = currentBranding.bg_gradient_from;
-
-      if (activeProgram?.id) {
-        activeProgram.branding = {
-          ...activeProgram.branding,
-          ...currentBranding,
-          primary_color: currentBranding.primary_color,
-          bg_gradient_from: currentBranding.bg_gradient_from,
-          bg_gradient_to: currentBranding.bg_gradient_from
-        };
-        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
-      }
-
-      // Highlight active swatch in palette grid
-      const targetColor = activeColorTarget === 'bg' ? currentBranding.bg_gradient_from : currentBranding.primary_color;
-      container.querySelectorAll('.btn-color-swatch').forEach(sw => {
-        const isSelected = (sw.dataset.color || '').toUpperCase() === targetColor.toUpperCase();
-        if (isSelected) {
-          sw.className = 'btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 border-white ring-2 ring-sky-400 scale-110 shadow-xl transition cursor-pointer relative group/swatch z-10';
-        } else {
-          sw.className = 'btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-white/15 hover:scale-110 hover:border-white hover:shadow-lg transition cursor-pointer relative group/swatch';
-        }
-      });
-
-      updatePreview();
-    }
-
     if (primaryInput && primaryText) {
       primaryInput.addEventListener('input', (e) => {
         const val = normalizeHex(e.target.value, '#0EA5E9');
@@ -2664,9 +2663,30 @@ export function renderCardBuilder(businessId) {
         businessService.updateBranding(business.id, updates.branding, session);
       }
 
+      // Save to quick files persistently
+      if (currentBranding.stamp_uncompleted_image) {
+        saveQuickFile('stamp_uncompleted', currentBranding.stamp_uncompleted_image, 'Sello Vacío');
+      }
+      if (currentBranding.stamp_completed_image) {
+        saveQuickFile('stamp_completed', currentBranding.stamp_completed_image, 'Sello Activo');
+      }
+      if (currentLogoUrl) {
+        saveQuickFile('logo', currentLogoUrl, 'Logo');
+      }
+      if (currentBranding.bg_image_url) {
+        saveQuickFile('banner', currentBranding.bg_image_url, 'Banner');
+      }
+
       allPrograms = loyaltyService.getAllPrograms(business.id) || [];
       activeProgram = allPrograms.find(p => p.id === activeProgram.id) || activeProgram;
       currentBranding = { ...activeProgram.branding };
+
+      renderQuickFiles('stamp_uncompleted');
+      renderQuickFiles('stamp_completed');
+      renderQuickFiles('logo');
+      renderQuickFiles('banner');
+      updateStampBadge();
+      updatePreview();
 
       toast.fireConfetti();
       toast.success(`\u00A1Tarjeta "${cardName}" guardada correctamente!`);
@@ -2678,12 +2698,6 @@ export function renderCardBuilder(businessId) {
     const btnSaveBottom = container.querySelector('#btn-save-branding-bottom');
     if (btnSaveBottom) btnSaveBottom.addEventListener('click', handleSaveProgram);
 
-    // Render Quick Selection libraries for all categories
-    ['logo', 'stamp_completed', 'stamp_uncompleted', 'banner'].forEach(cat => renderQuickFiles(cat));
-
-    // Highlight initial active swatch in color grid
-    syncColorState();
-
     // Wire error alert dismiss buttons
     container.querySelectorAll('.btn-dismiss-alert').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2694,7 +2708,16 @@ export function renderCardBuilder(businessId) {
     });
   }
 
-  renderForm();
+  function initBuilder() {
+    renderForm();
+    bindEvents();
+    ['logo', 'stamp_completed', 'stamp_uncompleted', 'banner'].forEach(cat => renderQuickFiles(cat));
+    syncColorState();
+    updateStampBadge();
+    updatePreview();
+  }
+
+  initBuilder();
   return container;
 }
 
