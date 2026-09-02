@@ -1167,6 +1167,192 @@ export function renderCardBuilder(businessId) {
     if (alertEl) alertEl.classList.add('hidden');
   }
 
+  function updateStampBadge() {
+    const badge = container.querySelector('#badge-stamp-mode');
+    if (!badge) return;
+    if (currentBranding.stamp_completed_image && currentBranding.stamp_uncompleted_image) {
+      badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/50';
+      badge.textContent = '\u2714 2 Sellos Personalizados Activos';
+    } else if (currentBranding.stamp_completed_image) {
+      badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/50';
+      badge.textContent = '\u2714 Sello Completado Personalizado';
+    } else if (currentBranding.stamp_uncompleted_image) {
+      badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-zinc-700/60 text-zinc-300 border-zinc-600';
+      badge.textContent = '\u2714 Sello Vac\u00EDo Personalizado';
+    } else {
+      badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-400 border-sky-500/30';
+      badge.textContent = `Icono Vectorial (${currentBranding.stamp_icon || 'Estrella'})`;
+    }
+  }
+
+  function applyLogo(imageUrl, fileName = 'Logotipo') {
+    if (!imageUrl) return;
+    currentLogoUrl = imageUrl;
+    currentBranding.logo_url = imageUrl;
+
+    // Save strictly to active card / program (independent from other cards)
+    if (activeProgram?.id) {
+      activeProgram.branding = {
+        ...activeProgram.branding,
+        ...currentBranding,
+        logo_url: imageUrl
+      };
+      loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
+      allPrograms = loyaltyService.getAllPrograms(business.id) || [];
+      const updated = allPrograms.find(p => p.id === activeProgram.id);
+      if (updated) activeProgram = updated;
+    }
+
+    const imgLogoPreview = container.querySelector('#img-logo-preview');
+    if (imgLogoPreview) imgLogoPreview.src = imageUrl;
+
+    const inputLogoUrl = container.querySelector('#input-logo-url');
+    if (inputLogoUrl) inputLogoUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
+
+    saveQuickFile('logo', imageUrl, fileName);
+    clearErrorNotice('logo');
+    updatePreview();
+    renderQuickFiles('logo');
+    toast.success('\u00A1Logotipo guardado y aplicado a esta tarjeta!');
+  }
+
+  function applyCompletedStamp(imageUrl, fileName = 'Sello Activo') {
+    if (!imageUrl) return;
+    currentBranding.stamp_completed_image = imageUrl;
+    currentBranding.stamp_custom_image = imageUrl;
+    currentBranding.stamp_icon = 'custom_image';
+
+    // Auto-save to activeProgram in storage
+    if (activeProgram?.id) {
+      activeProgram.branding = {
+        ...activeProgram.branding,
+        ...currentBranding
+      };
+      loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
+      allPrograms = loyaltyService.getAllPrograms(business.id) || [];
+      const updated = allPrograms.find(p => p.id === activeProgram.id);
+      if (updated) activeProgram = updated;
+    }
+
+    const boxStampCompletedPreview = container.querySelector('#box-stamp-completed-preview');
+    if (boxStampCompletedPreview) {
+      boxStampCompletedPreview.innerHTML = `
+        <img src="${imageUrl}" class="w-12 h-12 object-contain filter drop-shadow" alt="sello completado preview">
+        <span class="text-[9px] text-amber-300 mt-1 font-bold">.PNG Activo</span>
+      `;
+    }
+
+    const inputStampCompletedUrl = container.querySelector('#input-stamp-completed-url');
+    if (inputStampCompletedUrl) inputStampCompletedUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
+
+    container.querySelectorAll('.btn-select-icon').forEach(b => {
+      b.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
+    });
+
+    saveQuickFile('stamp_completed', imageUrl, fileName);
+    clearErrorNotice('stamp_completed');
+    updateStampBadge();
+    updatePreview();
+    renderQuickFiles('stamp_completed');
+    toast.success('\u00A1Foto de sello completado guardada y aplicada!');
+  }
+
+  function applyUncompletedStamp(imageUrl, fileName = 'Sello Vac\u00EDo') {
+    if (!imageUrl) return;
+    currentBranding.stamp_uncompleted_image = imageUrl;
+
+    // Auto-save to activeProgram in storage
+    if (activeProgram?.id) {
+      activeProgram.branding = {
+        ...activeProgram.branding,
+        ...currentBranding
+      };
+      loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
+      allPrograms = loyaltyService.getAllPrograms(business.id) || [];
+      const updated = allPrograms.find(p => p.id === activeProgram.id);
+      if (updated) activeProgram = updated;
+    }
+
+    const boxStampUncompletedPreview = container.querySelector('#box-stamp-uncompleted-preview');
+    if (boxStampUncompletedPreview) {
+      boxStampUncompletedPreview.innerHTML = `
+        <img src="${imageUrl}" class="w-12 h-12 object-contain opacity-70" alt="sello sin completar preview">
+        <span class="text-[9px] text-zinc-300 mt-1 font-bold">.PNG Vac\u00EDo</span>
+      `;
+    }
+
+    const inputStampUncompletedUrl = container.querySelector('#input-stamp-uncompleted-url');
+    if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
+
+    saveQuickFile('stamp_uncompleted', imageUrl, fileName);
+    clearErrorNotice('stamp_uncompleted');
+    updateStampBadge();
+    updatePreview();
+    renderQuickFiles('stamp_uncompleted');
+    toast.success('\u00A1Foto de sello sin completar guardada y aplicada!');
+  }
+
+  function applyBgBanner(imageUrl, fileName = 'Banner') {
+    currentBranding.bg_image_url = imageUrl || null;
+
+    // Auto-save to activeProgram in storage
+    if (activeProgram?.id) {
+      activeProgram.branding = {
+        ...activeProgram.branding,
+        ...currentBranding
+      };
+      loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
+      allPrograms = loyaltyService.getAllPrograms(business.id) || [];
+      const updated = allPrograms.find(p => p.id === activeProgram.id);
+      if (updated) activeProgram = updated;
+    }
+
+    const boxPreview = container.querySelector('#box-banner-preview');
+    const badgeStatus = container.querySelector('#badge-banner-status');
+    const btnClear = container.querySelector('#btn-clear-bg-banner');
+    const inputUrl = container.querySelector('#input-bg-banner-url');
+
+    if (boxPreview) {
+      if (imageUrl) {
+        boxPreview.innerHTML = `
+          <img id="img-bg-banner-preview" src="${imageUrl}" class="w-full h-full object-cover rounded-xl" alt="banner preview">
+          <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">3:1 Activo</span>
+        `;
+      } else {
+        boxPreview.innerHTML = `
+          <span class="text-lg text-sky-400 font-bold">\u2728</span>
+          <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (3:1)</span>
+        `;
+      }
+    }
+
+    if (badgeStatus) {
+      badgeStatus.className = `text-[10px] font-extrabold ${imageUrl ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border`;
+      badgeStatus.textContent = imageUrl ? 'Banner Personalizado' : 'Franja Autom\u00E1tica';
+    }
+
+    if (btnClear) {
+      btnClear.classList.toggle('hidden', !imageUrl);
+    }
+
+    if (inputUrl && !imageUrl) {
+      inputUrl.value = '';
+    } else if (inputUrl && imageUrl) {
+      inputUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
+    }
+
+    if (imageUrl) {
+      saveQuickFile('banner', imageUrl, fileName);
+      toast.success('\u00A1Banner / Hero Image guardado y aplicado!');
+    } else {
+      toast.success('Franja autom\u00E1tica del servidor restaurada.');
+    }
+
+    clearErrorNotice('banner');
+    updatePreview();
+    renderQuickFiles('banner');
+  }
+
   function getQuickFiles(category) {
     try {
       const key = `vynta_quick_${category}_${business?.id || 'default'}`;
@@ -1220,15 +1406,31 @@ export function renderCardBuilder(businessId) {
       return;
     }
 
-    containerEl.innerHTML = files.map(f => `
-      <div class="group relative flex items-center gap-1.5 px-2 py-1 rounded-xl bg-zinc-900 border border-zinc-700 hover:border-sky-500 transition shadow-sm">
-        <button type="button" class="btn-apply-quick-file flex items-center gap-1.5 text-left cursor-pointer" data-category="${category}" data-url="${f.url}" title="Hacer clic para aplicar">
-          <img src="${f.url}" class="${category === 'banner' ? 'w-10 h-3.5 object-cover' : 'w-5 h-5 object-contain'} rounded shrink-0 bg-black/40 border border-white/10" alt="thumb">
-          <span class="text-[10px] text-zinc-300 group-hover:text-white font-medium max-w-[85px] truncate">${f.name || 'Guardado'}</span>
-        </button>
-        <button type="button" class="btn-remove-quick-file text-zinc-500 hover:text-rose-400 text-xs font-bold px-1 transition cursor-pointer" data-category="${category}" data-id="${f.id}" title="Eliminar de guardados">\u2715</button>
-      </div>
-    `).join('');
+    const currentUrl = category === 'logo'
+      ? currentLogoUrl
+      : category === 'stamp_completed'
+      ? currentBranding.stamp_completed_image
+      : category === 'stamp_uncompleted'
+      ? currentBranding.stamp_uncompleted_image
+      : currentBranding.bg_image_url;
+
+    containerEl.innerHTML = files.map(f => {
+      const isSelected = currentUrl === f.url;
+      return `
+        <div class="group relative flex items-center gap-1.5 px-2 py-1 rounded-xl transition shadow-sm ${
+          isSelected
+            ? 'bg-sky-950/70 border-2 border-sky-400 text-sky-200 ring-2 ring-sky-500/40 shadow-sky-500/10'
+            : 'bg-zinc-900 border border-zinc-700 hover:border-sky-500'
+        }">
+          <button type="button" class="btn-apply-quick-file flex items-center gap-1.5 text-left cursor-pointer" data-category="${category}" data-url="${f.url}" title="Hacer clic para aplicar a esta tarjeta">
+            <img src="${f.url}" class="${category === 'banner' ? 'w-10 h-3.5 object-cover' : 'w-5 h-5 object-contain'} rounded shrink-0 bg-black/40 border border-white/10" alt="thumb">
+            <span class="text-[10px] ${isSelected ? 'text-sky-200 font-bold' : 'text-zinc-300 group-hover:text-white font-medium'} max-w-[85px] truncate">${f.name || 'Guardado'}</span>
+            ${isSelected ? '<span class="text-[9px] text-sky-400 font-bold">\u2714</span>' : ''}
+          </button>
+          <button type="button" class="btn-remove-quick-file text-zinc-500 hover:text-rose-400 text-xs font-bold px-1 transition cursor-pointer" data-category="${category}" data-id="${f.id}" title="Eliminar de guardados">\u2715</button>
+        </div>
+      `;
+    }).join('');
 
     containerEl.querySelectorAll('.btn-apply-quick-file').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -1239,20 +1441,12 @@ export function renderCardBuilder(businessId) {
         clearErrorNotice(cat);
         if (cat === 'banner') {
           applyBgBanner(url, btn.querySelector('span')?.textContent || 'Banner');
-          const input = container.querySelector('#input-bg-banner-url');
-          if (input) input.value = url.startsWith('data:') ? '' : url;
         } else if (cat === 'logo') {
           applyLogo(url, btn.querySelector('span')?.textContent || 'Logo');
-          const input = container.querySelector('#input-logo-url');
-          if (input) input.value = url.startsWith('data:') ? '' : url;
         } else if (cat === 'stamp_completed') {
           applyCompletedStamp(url, btn.querySelector('span')?.textContent || 'Sello Activo');
-          const input = container.querySelector('#input-stamp-completed-url');
-          if (input) input.value = url.startsWith('data:') ? '' : url;
         } else if (cat === 'stamp_uncompleted') {
           applyUncompletedStamp(url, btn.querySelector('span')?.textContent || 'Sello Vac\u00EDo');
-          const input = container.querySelector('#input-stamp-uncompleted-url');
-          if (input) input.value = url.startsWith('data:') ? '' : url;
         }
       });
     });
@@ -1399,14 +1593,17 @@ export function renderCardBuilder(businessId) {
           couponCode = found.coupon_code || 'VYNTA-PROMO';
           minSpend = found.min_spend || 'Sin consumo m\u00EDnimo';
 
+          currentLogoUrl = found.branding?.logo_url || business?.logo_url || 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=128&auto=format&fit=crop&q=80';
+
           currentBranding = {
+            logo_url: found.branding?.logo_url || null,
             primary_color: found.branding?.primary_color || business?.branding?.primary_color || '#0EA5E9',
             secondary_color: found.branding?.secondary_color || business?.branding?.secondary_color || '#0369A1',
             bg_gradient_from: found.branding?.bg_gradient_from || business?.branding?.bg_gradient_from || '#0F172A',
             bg_gradient_to: found.branding?.bg_gradient_to || business?.branding?.bg_gradient_to || '#020617',
-            bg_image_url: found.branding?.bg_image_url || business?.branding?.bg_image_url || null,
+            bg_image_url: found.branding?.bg_image_url || null,
             overlay_opacity: (found.branding?.overlay_opacity !== undefined) ? found.branding.overlay_opacity : 0.70,
-            stamp_icon: found.branding?.stamp_icon || business?.branding?.stamp_icon || 'star',
+            stamp_icon: found.branding?.stamp_icon || 'star',
             stamp_completed_image: found.branding?.stamp_completed_image || found.branding?.stamp_custom_image || null,
             stamp_uncompleted_image: found.branding?.stamp_uncompleted_image || null,
             stamp_custom_image: found.branding?.stamp_completed_image || found.branding?.stamp_custom_image || null,
@@ -1599,24 +1796,6 @@ export function renderCardBuilder(businessId) {
     const inputLogoUrl = container.querySelector('#input-logo-url');
     const imgLogoPreview = container.querySelector('#img-logo-preview');
 
-    function applyLogo(imageUrl, fileName = 'Logotipo') {
-      if (!imageUrl) return;
-      currentLogoUrl = imageUrl;
-      if (business) business.logo_url = imageUrl;
-      if (imgLogoPreview) imgLogoPreview.src = imageUrl;
-      if (inputLogoUrl) inputLogoUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
-
-      // Auto-save to business storage
-      if (business?.id) {
-        businessService.update(business.id, { logo_url: imageUrl }, session);
-      }
-
-      saveQuickFile('logo', imageUrl, fileName);
-      clearErrorNotice('logo');
-      updatePreview();
-      toast.success('\u00A1Logotipo guardado y aplicado a la tarjeta!');
-    }
-
     if (btnTriggerLogo && fileLogoUpload) {
       btnTriggerLogo.onclick = (e) => {
         e.preventDefault();
@@ -1700,78 +1879,6 @@ export function renderCardBuilder(businessId) {
     const boxStampUncompletedPreview = container.querySelector('#box-stamp-uncompleted-preview');
     const btnClearStampCompletedImg = container.querySelector('#btn-clear-stamp-completed-img');
     const btnClearStampUncompletedImg = container.querySelector('#btn-clear-stamp-uncompleted-img');
-
-    function updateStampBadge() {
-      const badge = container.querySelector('#badge-stamp-mode');
-      if (!badge) return;
-      if (currentBranding.stamp_completed_image && currentBranding.stamp_uncompleted_image) {
-        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/50';
-        badge.textContent = '\u2714 2 Sellos Personalizados Activos';
-      } else if (currentBranding.stamp_completed_image) {
-        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-amber-500/20 text-amber-300 border-amber-500/50';
-        badge.textContent = '\u2714 Sello Completado Personalizado';
-      } else if (currentBranding.stamp_uncompleted_image) {
-        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-zinc-700/60 text-zinc-300 border-zinc-600';
-        badge.textContent = '\u2714 Sello Vac\u00EDo Personalizado';
-      } else {
-        badge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full border bg-sky-500/10 text-sky-400 border-sky-500/30';
-        badge.textContent = `Icono Vectorial (${currentBranding.stamp_icon || 'Estrella'})`;
-      }
-    }
-
-    function applyCompletedStamp(imageUrl, fileName = 'Sello Activo') {
-      if (!imageUrl) return;
-      currentBranding.stamp_completed_image = imageUrl;
-      currentBranding.stamp_custom_image = imageUrl;
-      currentBranding.stamp_icon = 'custom_image';
-      
-      if (boxStampCompletedPreview) {
-        boxStampCompletedPreview.innerHTML = `
-          <img src="${imageUrl}" class="w-12 h-12 object-contain filter drop-shadow" alt="sello completado preview">
-          <span class="text-[9px] text-amber-300 mt-1 font-bold">.PNG Activo</span>
-        `;
-      }
-      
-      container.querySelectorAll('.btn-select-icon').forEach(b => {
-        b.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
-      });
-
-      // Auto-save to activeProgram in storage
-      if (activeProgram?.id) {
-        activeProgram.branding = { ...currentBranding };
-        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
-      }
-
-      saveQuickFile('stamp_completed', imageUrl, fileName);
-      clearErrorNotice('stamp_completed');
-      updateStampBadge();
-      updatePreview();
-      toast.success('\u00A1Foto de sello completado guardada y aplicada!');
-    }
-
-    function applyUncompletedStamp(imageUrl, fileName = 'Sello Vac\u00EDo') {
-      if (!imageUrl) return;
-      currentBranding.stamp_uncompleted_image = imageUrl;
-
-      if (boxStampUncompletedPreview) {
-        boxStampUncompletedPreview.innerHTML = `
-          <img src="${imageUrl}" class="w-12 h-12 object-contain opacity-70" alt="sello sin completar preview">
-          <span class="text-[9px] text-zinc-300 mt-1 font-bold">.PNG Vac\u00EDo</span>
-        `;
-      }
-
-      // Auto-save to activeProgram in storage
-      if (activeProgram?.id) {
-        activeProgram.branding = { ...currentBranding };
-        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
-      }
-
-      saveQuickFile('stamp_uncompleted', imageUrl, fileName);
-      clearErrorNotice('stamp_uncompleted');
-      updateStampBadge();
-      updatePreview();
-      toast.success('\u00A1Foto de sello sin completar guardada y aplicada!');
-    }
 
     // --- COMPLETED STAMP LISTENERS ---
     if (btnTriggerStampCompleted && fileStampCompletedUpload) {
@@ -1868,6 +1975,7 @@ export function renderCardBuilder(businessId) {
         clearErrorNotice('stamp_completed');
         updateStampBadge();
         updatePreview();
+        renderQuickFiles('stamp_completed');
         toast.success('Foto de sello completado eliminada');
       });
     }
@@ -1931,7 +2039,7 @@ export function renderCardBuilder(businessId) {
         const val = e.target.value.trim();
         if (val) {
           clearErrorNotice('stamp_uncompleted');
-          applyUncompletedStamp(val, 'Sello Vac\u00EDo URL');
+          applyUncompletedStamp(val, 'Sello URL');
         }
       });
     }
@@ -1963,6 +2071,7 @@ export function renderCardBuilder(businessId) {
         clearErrorNotice('stamp_uncompleted');
         updateStampBadge();
         updatePreview();
+        renderQuickFiles('stamp_uncompleted');
         toast.success('Foto de sello sin completar eliminada');
       });
     }
@@ -2110,58 +2219,6 @@ export function renderCardBuilder(businessId) {
     const dropzoneBgBanner = container.querySelector('#dropzone-bg-banner');
     const inputBgBannerUrl = container.querySelector('#input-bg-banner-url');
     const btnClearBgBanner = container.querySelector('#btn-clear-bg-banner');
-
-    function applyBgBanner(imageUrl, fileName = 'Banner 3:1') {
-      currentBranding.bg_image_url = imageUrl || null;
-
-      const boxPreview = container.querySelector('#box-bg-banner-preview');
-      const badgeStatus = container.querySelector('#badge-banner-status');
-      const btnClear = container.querySelector('#btn-clear-bg-banner');
-      const inputUrl = container.querySelector('#input-bg-banner-url');
-
-      if (boxPreview) {
-        if (imageUrl) {
-          boxPreview.innerHTML = `
-            <img id="img-bg-banner-preview" src="${imageUrl}" class="w-full h-full object-cover rounded-xl" alt="banner preview">
-            <span class="absolute bottom-1 bg-black/80 text-[8px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded">3:1 Activo</span>
-          `;
-        } else {
-          boxPreview.innerHTML = `
-            <span class="text-lg text-sky-400 font-bold">\u2728</span>
-            <span class="text-[9px] text-zinc-400 font-bold mt-1 text-center">Franja Autom\u00E1tica Servidor (3:1)</span>
-          `;
-        }
-      }
-
-      if (badgeStatus) {
-        badgeStatus.className = `text-[10px] font-extrabold ${imageUrl ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-sky-500/10 text-sky-400 border-sky-500/20'} px-2.5 py-1 rounded-full border`;
-        badgeStatus.textContent = imageUrl ? 'Banner Personalizado' : 'Franja Autom\u00E1tica';
-      }
-
-      if (btnClear) {
-        btnClear.classList.toggle('hidden', !imageUrl);
-      }
-
-      if (inputUrl && !imageUrl) {
-        inputUrl.value = '';
-      }
-
-      // Auto-save to activeProgram in storage so it stays saved
-      if (activeProgram?.id) {
-        activeProgram.branding = { ...currentBranding };
-        loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
-      }
-
-      if (imageUrl) {
-        saveQuickFile('banner', imageUrl, fileName);
-        toast.success('\u00A1Banner horizontal 3:1 guardado y aplicado!');
-      } else {
-        toast.success('Franja autom\u00E1tica del servidor restaurada.');
-      }
-
-      clearErrorNotice('banner');
-      updatePreview();
-    }
 
     if (btnTriggerBgBanner && fileCardBgUpload) {
       btnTriggerBgBanner.onclick = (e) => {
@@ -2342,8 +2399,6 @@ export function renderCardBuilder(businessId) {
     const btnSave = container.querySelector('#btn-save-branding');
     if (btnSave) {
       btnSave.addEventListener('click', () => {
-        businessService.update(business.id, { logo_url: currentLogoUrl }, session);
-        
         const updates = {
           name: cardName,
           stamps_required: totalStamps,
@@ -2357,15 +2412,14 @@ export function renderCardBuilder(businessId) {
           discount_value: discountValue,
           coupon_code: couponCode,
           min_spend: minSpend,
-          branding: currentBranding
+          branding: {
+            ...currentBranding,
+            logo_url: currentLogoUrl
+          }
         };
 
         if (activeProgram?.id) {
           loyaltyService.updateProgram(business.id, activeProgram.id, updates, session);
-        }
-
-        if (activeProgram.active) {
-          businessService.updateBranding(business.id, currentBranding, session);
         }
 
         allPrograms = loyaltyService.getAllPrograms(business.id) || [];

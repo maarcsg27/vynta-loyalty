@@ -259,7 +259,7 @@ export function renderLoyaltyCardHTML({
       ">
         <div class="flex items-center justify-between mb-5 relative z-10">
           <div class="flex items-center gap-3">
-            <img src="${business?.logo_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=128&auto=format&fit=crop&q=80'}" alt="${business?.name}" class="w-11 h-11 rounded-2xl object-cover border border-white/20 shadow-md bg-zinc-900 shrink-0">
+            <img src="${branding.logo_url || business?.logo_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=128&auto=format&fit=crop&q=80'}" alt="${business?.name}" class="w-11 h-11 rounded-2xl object-cover border border-white/20 shadow-md bg-zinc-900 shrink-0">
             <div class="min-w-0">
               <h3 class="text-lg font-bold tracking-wide leading-tight truncate text-white">${business?.name || 'VYNTA Business'}</h3>
               <p class="text-[10px] font-bold uppercase tracking-widest" style="color: ${branding.primary_color}">
@@ -644,7 +644,7 @@ export function renderGoogleWalletPassHTML({
         <!-- Google Header -->
         <div class="p-4 border-b border-white/10 flex items-center justify-between" style="background: rgba(0,0,0,0.4);">
           <div class="flex items-center gap-3 min-w-0">
-            <img src="${business?.logo_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=128&auto=format&fit=crop&q=80'}" alt="logo" class="w-9 h-9 rounded-full object-cover border border-white/20 bg-zinc-900 shrink-0">
+            <img src="${branding.logo_url || business?.logo_url || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=128&auto=format&fit=crop&q=80'}" alt="logo" class="w-9 h-9 rounded-full object-cover border border-white/20 bg-zinc-900 shrink-0">
             <div class="min-w-0">
               <h4 class="text-sm font-bold text-white leading-tight truncate">${business?.name || 'Local 1'}</h4>
               <p class="text-[10px] font-bold uppercase truncate" style="color: ${primaryColor}">${typeSubtitle}</p>
