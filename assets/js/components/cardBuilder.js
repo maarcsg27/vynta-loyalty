@@ -75,6 +75,19 @@ export function renderCardBuilder(businessId) {
   let couponCode = activeProgram.coupon_code || 'VYNTA-PROMO';
   let minSpend = activeProgram.min_spend || 'Sin consumo m\u00EDnimo';
 
+  function normalizeHex(hex, fallback = '#0F172A') {
+    if (!hex || typeof hex !== 'string') return fallback;
+    let clean = hex.trim();
+    if (!clean.startsWith('#')) clean = '#' + clean;
+    if (clean.length === 4) {
+      clean = '#' + clean[1] + clean[1] + clean[2] + clean[2] + clean[3] + clean[3];
+    }
+    if (/^#[0-9A-Fa-f]{6}$/.test(clean)) {
+      return clean.toUpperCase();
+    }
+    return fallback;
+  }
+
   function getCardTypeLabel(type) {
     if (type === 'stamps') return 'Tarjeta Loyalty (Sellos)';
     if (type === 'single_use_promo') return 'Tarjeta Promo (1 Solo Uso)';
@@ -526,11 +539,9 @@ export function renderCardBuilder(businessId) {
                         <span class="text-xs font-bold text-white">Sello Completado</span>
                         <span class="text-[10px] text-emerald-400 font-semibold">(Obtenido)</span>
                       </div>
-                      ${currentBranding.stamp_completed_image ? `
-                        <button type="button" id="btn-clear-stamp-completed-img" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
-                          <span>\u2715</span> Quitar
-                        </button>
-                      ` : ''}
+                      <button type="button" id="btn-clear-stamp-completed-img" class="${currentBranding.stamp_completed_image ? '' : 'hidden'} text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
+                        <span>\u2715</span> Quitar
+                      </button>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
@@ -593,29 +604,27 @@ export function renderCardBuilder(businessId) {
                 </div>
 
                 <!-- 2.2 SELLO SIN COMPLETAR (PENDIENTE / VACIO) -->
-                <div class="p-4 rounded-2xl bg-zinc-900/90 border border-zinc-700/60 space-y-3 flex flex-col justify-between">
+                <div class="p-4 rounded-2xl bg-zinc-900/90 border border-amber-500/30 space-y-3 flex flex-col justify-between">
                   <div>
                     <div class="flex items-center justify-between mb-2">
                       <div class="flex items-center gap-1.5">
-                        <span class="w-2.5 h-2.5 rounded-full bg-zinc-500"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-zinc-400"></span>
                         <span class="text-xs font-bold text-white">Sello Sin Completar</span>
                         <span class="text-[10px] text-zinc-400 font-semibold">(Pendiente / Vac\u00EDo)</span>
                       </div>
-                      ${currentBranding.stamp_uncompleted_image ? `
-                        <button type="button" id="btn-clear-stamp-uncompleted-img" class="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
-                          <span>\u2715</span> Quitar
-                        </button>
-                      ` : ''}
+                      <button type="button" id="btn-clear-stamp-uncompleted-img" class="${currentBranding.stamp_uncompleted_image ? '' : 'hidden'} text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 cursor-pointer">
+                        <span>\u2715</span> Quitar
+                      </button>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                       <div id="box-stamp-uncompleted-preview" class="sm:col-span-5 h-24 rounded-2xl border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center bg-black/60 shrink-0 overflow-hidden p-2 text-center">
                         ${currentBranding.stamp_uncompleted_image ? `
-                          <img src="${currentBranding.stamp_uncompleted_image}" class="w-12 h-12 object-contain opacity-70" alt="sello sin completar preview">
+                          <img src="${currentBranding.stamp_uncompleted_image}" class="w-12 h-12 object-contain opacity-75 filter drop-shadow" alt="sello sin completar preview">
                           <span class="text-[9px] text-zinc-300 mt-1 font-bold">.PNG Vac\u00EDo</span>
                         ` : `
-                          <span class="text-2xl text-zinc-600 font-bold">\u2606</span>
-                          <span class="text-[9px] text-zinc-500 font-bold mt-1">Silueta Tenue</span>
+                          <span class="text-2xl text-zinc-500 font-bold">\u2606</span>
+                          <span class="text-[9px] text-zinc-400 font-bold mt-1">Sin Imagen (Silueta)</span>
                         `}
                       </div>
 
@@ -624,7 +633,7 @@ export function renderCardBuilder(businessId) {
                           <p class="text-[11px] font-bold text-zinc-300 group-hover:text-white transition flex items-center justify-center gap-1">
                             <span>\u2912</span> Arrastra o sube PNG
                           </p>
-                          <button type="button" id="btn-trigger-stamp-uncompleted-select" class="mt-1.5 px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 text-[10px] font-bold transition flex items-center justify-center gap-1 w-full cursor-pointer">
+                          <button type="button" id="btn-trigger-stamp-uncompleted-select" class="mt-1.5 px-3 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-[10px] font-bold transition flex items-center justify-center gap-1 w-full cursor-pointer">
                             <span>\uD83D\uDCC1</span> Subir Sello Vac\u00EDo
                           </button>
                         </div>
@@ -658,11 +667,11 @@ export function renderCardBuilder(businessId) {
                   <div class="pt-2 border-t border-zinc-800/80">
                     <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Muestras Sello Vac\u00EDo:</span>
                     <div class="flex flex-wrap gap-1.5">
-                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/481/481078.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\u2B55</span> C\u00EDrculo</button>
-                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/1047/1047293.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\u2615</span> Taza Vac\u00EDa</button>
-                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\uD83D\uDD12</span> Candado</button>
-                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/1828/1828970.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\u2B50</span> Silueta</button>
-                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/850/850960.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-400 transition flex items-center gap-1"><span>\uD83D\uDD52</span> Reloj</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/481/481078.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-300 transition flex items-center gap-1"><span>\u2B55</span> C\u00EDrculo</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/1047/1047293.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-300 transition flex items-center gap-1"><span>\u2615</span> Taza Vac\u00EDa</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83D\uDD12</span> Candado</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/1828/1828970.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-300 transition flex items-center gap-1"><span>\u2B50</span> Silueta</button>
+                      <button type="button" data-sample-uncompleted="https://cdn-icons-png.flaticon.com/512/850/850960.png" class="btn-sample-stamp-uncompleted px-2 py-0.5 rounded-md text-[10px] bg-zinc-900 border border-zinc-800 hover:border-zinc-500 text-zinc-300 transition flex items-center gap-1"><span>\uD83D\uDD52</span> Reloj</button>
                     </div>
                   </div>
                 </div>
@@ -997,31 +1006,35 @@ export function renderCardBuilder(businessId) {
               <div class="space-y-2.5 p-3 rounded-2xl bg-zinc-950/70 border border-zinc-800/90">
                 ${[
                   {
-                    category: 'Neutros & Oscuros (Recomendados Wallet)',
-                    colors: ['#000000', '#0A0A0A', '#0D0D0D', '#12141C', '#0F172A', '#1E293B', '#334155', '#18181B', '#27272A', '#3F3F46', '#52525B', '#71717A', '#A1A1AA', '#D4D4D8', '#FFFFFF']
+                    category: '1. Neutros & Escala de Grises (De Negro Profundo a Blanco)',
+                    colors: ['#000000', '#0A0A0A', '#0D0D0D', '#12141C', '#0F172A', '#18181B', '#27272A', '#3F3F46', '#52525B', '#71717A', '#A1A1AA', '#D4D4D8', '#E4E4E7', '#FFFFFF']
                   },
                   {
-                    category: 'Azules, Cian & Índigos',
-                    colors: ['#02457A', '#0284C7', '#0EA5E9', '#38BDF8', '#7DD3FC', '#1D4ED8', '#2563EB', '#3B82F6', '#60A5FA', '#1E1B4B', '#3730A3', '#4F46E5', '#6366F1', '#818CF8', '#06B6D4']
+                    category: '2. Azules, Cian & \u00CDndigos (De Ultra Oscuro a Celeste)',
+                    colors: ['#021B35', '#0A2540', '#1E1B4B', '#172554', '#1E3A8A', '#1D4ED8', '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#0284C7', '#0EA5E9', '#38BDF8', '#7DD3FC', '#BAE6FD']
                   },
                   {
-                    category: 'Esmeraldas & Verdes',
-                    colors: ['#06281E', '#064E3B', '#047857', '#059669', '#10B981', '#34D399', '#6EE7B7', '#14532D', '#16A34A', '#22C55E', '#4ADE80', '#65A30D', '#84CC16', '#A3E635', '#14B8A6']
+                    category: '3. Esmeraldas & Verdes (De Verde Noche a Menta Claro)',
+                    colors: ['#022016', '#06281E', '#064E3B', '#14532D', '#047857', '#059669', '#10B981', '#34D399', '#6EE7B7', '#A7F3D0', '#16A34A', '#22C55E', '#4ADE80', '#84CC16', '#BEF264']
                   },
                   {
-                    category: 'Dorados, Ámbar & Naranjas',
-                    colors: ['#1C160C', '#78350F', '#92400E', '#B45309', '#D97706', '#F59E0B', '#FBBF24', '#FCD34D', '#854D0E', '#CA8A04', '#EAB308', '#FACC15', '#9A3412', '#EA580C', '#F97316']
+                    category: '4. Dorados, \u00C1mbar & Naranjas (De Obsidiana \u00C1mbar a Oro Claro)',
+                    colors: ['#1C160C', '#451A03', '#78350F', '#92400E', '#B45309', '#D97706', '#F59E0B', '#FBBF24', '#FCD34D', '#FDE68A', '#CA8A04', '#EAB308', '#EA580C', '#F97316', '#FDBA74']
                   },
                   {
-                    category: 'Rojos, Rosas & Púrpuras',
-                    colors: ['#450A0A', '#7F1D1D', '#991B1B', '#DC2626', '#EF4444', '#F87171', '#881337', '#BE123C', '#E11D48', '#F43F5E', '#FB7185', '#1E1035', '#581C87', '#9333EA', '#A855F7', '#8B5CF6']
+                    category: '5. Rojos, Rosas & Carmes\u00ED (De Rojo Noche a Rosa Pastel)',
+                    colors: ['#2A0808', '#450A0A', '#7F1D1D', '#991B1B', '#B91C1C', '#DC2626', '#EF4444', '#F87171', '#FCA5A5', '#881337', '#BE123C', '#E11D48', '#F43F5E', '#FB7185', '#FDA4AF']
+                  },
+                  {
+                    category: '6. P\u00FArpuras & Violetas (De P\u00FArpura Noche a Lavanda Claro)',
+                    colors: ['#150926', '#1E1035', '#3B0764', '#581C87', '#6B21A8', '#7E22CE', '#9333EA', '#A855F7', '#C084FC', '#E9D5FF', '#4C1D95', '#6D28D9', '#8B5CF6', '#A78BFA', '#DDD6FE']
                   }
                 ].map(group => `
                   <div>
                     <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">${group.category}</span>
                     <div class="flex flex-wrap gap-1.5">
                       ${group.colors.map(hex => `
-                        <button type="button" data-color="${hex}" class="btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-white/10 hover:scale-110 hover:border-white/60 hover:shadow-lg transition cursor-pointer relative group/swatch" style="background-color: ${hex};" title="${hex}">
+                        <button type="button" data-color="${hex}" class="btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-white/15 hover:scale-110 hover:border-white hover:shadow-lg transition cursor-pointer relative group/swatch" style="background-color: ${hex};" title="${hex}">
                           <span class="sr-only">${hex}</span>
                         </button>
                       `).join('')}
@@ -1333,6 +1346,9 @@ export function renderCardBuilder(businessId) {
     const inputStampCompletedUrl = container.querySelector('#input-stamp-completed-url');
     if (inputStampCompletedUrl) inputStampCompletedUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
 
+    const btnClear = container.querySelector('#btn-clear-stamp-completed-img');
+    if (btnClear) btnClear.classList.remove('hidden');
+
     container.querySelectorAll('.btn-select-icon').forEach(b => {
       b.className = 'btn-select-icon p-2 rounded-xl border text-center flex flex-col items-center gap-1 transition bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white';
     });
@@ -1364,13 +1380,16 @@ export function renderCardBuilder(businessId) {
     const boxStampUncompletedPreview = container.querySelector('#box-stamp-uncompleted-preview');
     if (boxStampUncompletedPreview) {
       boxStampUncompletedPreview.innerHTML = `
-        <img src="${imageUrl}" class="w-12 h-12 object-contain opacity-70" alt="sello sin completar preview">
+        <img src="${imageUrl}" class="w-12 h-12 object-contain opacity-75 filter drop-shadow" alt="sello sin completar preview">
         <span class="text-[9px] text-zinc-300 mt-1 font-bold">.PNG Vac\u00EDo</span>
       `;
     }
 
     const inputStampUncompletedUrl = container.querySelector('#input-stamp-uncompleted-url');
     if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = imageUrl.startsWith('data:') ? '' : imageUrl;
+
+    const btnClear = container.querySelector('#btn-clear-stamp-uncompleted-img');
+    if (btnClear) btnClear.classList.remove('hidden');
 
     saveQuickFile('stamp_uncompleted', imageUrl, fileName);
     clearErrorNotice('stamp_uncompleted');
@@ -2069,6 +2088,7 @@ export function renderCardBuilder(businessId) {
             <span class="text-[9px] text-zinc-500 font-bold mt-1">Sin Imagen</span>
           `;
         }
+        btnClearStampCompletedImg.classList.add('hidden');
         if (activeProgram?.id) {
           activeProgram.branding = { ...currentBranding };
           loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
@@ -2161,10 +2181,11 @@ export function renderCardBuilder(businessId) {
         if (inputStampUncompletedUrl) inputStampUncompletedUrl.value = '';
         if (boxStampUncompletedPreview) {
           boxStampUncompletedPreview.innerHTML = `
-            <span class="text-2xl text-zinc-600 font-bold">\u2606</span>
-            <span class="text-[9px] text-zinc-500 font-bold mt-1">Silueta Tenue</span>
+            <span class="text-2xl text-zinc-500 font-bold">\u2606</span>
+            <span class="text-[9px] text-zinc-400 font-bold mt-1">Sin Imagen (Silueta)</span>
           `;
         }
+        btnClearStampUncompletedImg.classList.add('hidden');
         if (activeProgram?.id) {
           activeProgram.branding = { ...currentBranding };
           loyaltyService.updateProgram(business.id, activeProgram.id, { branding: currentBranding }, session);
@@ -2429,19 +2450,38 @@ export function renderCardBuilder(businessId) {
     let activeColorTarget = 'bg'; // 'bg' or 'accent'
 
     function syncColorState() {
+      currentBranding.primary_color = normalizeHex(currentBranding.primary_color, '#0EA5E9');
+      currentBranding.bg_gradient_from = normalizeHex(currentBranding.bg_gradient_from, '#0F172A');
+      currentBranding.bg_gradient_to = currentBranding.bg_gradient_from;
+
       if (activeProgram?.id) {
         activeProgram.branding = {
           ...activeProgram.branding,
-          ...currentBranding
+          ...currentBranding,
+          primary_color: currentBranding.primary_color,
+          bg_gradient_from: currentBranding.bg_gradient_from,
+          bg_gradient_to: currentBranding.bg_gradient_from
         };
         loyaltyService.updateProgram(business.id, activeProgram.id, { branding: activeProgram.branding }, session);
       }
+
+      // Highlight active swatch in palette grid
+      const targetColor = activeColorTarget === 'bg' ? currentBranding.bg_gradient_from : currentBranding.primary_color;
+      container.querySelectorAll('.btn-color-swatch').forEach(sw => {
+        const isSelected = (sw.dataset.color || '').toUpperCase() === targetColor.toUpperCase();
+        if (isSelected) {
+          sw.className = 'btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-2 border-white ring-2 ring-sky-400 scale-110 shadow-xl transition cursor-pointer relative group/swatch z-10';
+        } else {
+          sw.className = 'btn-color-swatch w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-white/15 hover:scale-110 hover:border-white hover:shadow-lg transition cursor-pointer relative group/swatch';
+        }
+      });
+
       updatePreview();
     }
 
     if (primaryInput && primaryText) {
       primaryInput.addEventListener('input', (e) => {
-        const val = e.target.value.toUpperCase();
+        const val = normalizeHex(e.target.value, '#0EA5E9');
         currentBranding.primary_color = val;
         primaryText.value = val;
         if (badgePrimaryHex) badgePrimaryHex.textContent = val;
@@ -2450,18 +2490,22 @@ export function renderCardBuilder(businessId) {
       primaryText.addEventListener('input', (e) => {
         let val = e.target.value.trim();
         if (!val.startsWith('#') && val.length > 0) val = '#' + val;
-        currentBranding.primary_color = val;
         if (/^#[0-9A-F]{6}$/i.test(val)) {
-          primaryInput.value = val;
+          const normalized = normalizeHex(val, '#0EA5E9');
+          currentBranding.primary_color = normalized;
+          primaryInput.value = normalized;
+          if (badgePrimaryHex) badgePrimaryHex.textContent = normalized;
+          syncColorState();
+        } else {
+          currentBranding.primary_color = val;
+          if (badgePrimaryHex) badgePrimaryHex.textContent = val.toUpperCase();
         }
-        if (badgePrimaryHex) badgePrimaryHex.textContent = val.toUpperCase();
-        syncColorState();
       });
     }
 
     if (bgFromInput && bgFromText) {
       bgFromInput.addEventListener('input', (e) => {
-        const val = e.target.value.toUpperCase();
+        const val = normalizeHex(e.target.value, '#0F172A');
         currentBranding.bg_gradient_from = val;
         currentBranding.bg_gradient_to = val;
         bgFromText.value = val;
@@ -2471,13 +2515,18 @@ export function renderCardBuilder(businessId) {
       bgFromText.addEventListener('input', (e) => {
         let val = e.target.value.trim();
         if (!val.startsWith('#') && val.length > 0) val = '#' + val;
-        currentBranding.bg_gradient_from = val;
-        currentBranding.bg_gradient_to = val;
         if (/^#[0-9A-F]{6}$/i.test(val)) {
-          bgFromInput.value = val;
+          const normalized = normalizeHex(val, '#0F172A');
+          currentBranding.bg_gradient_from = normalized;
+          currentBranding.bg_gradient_to = normalized;
+          bgFromInput.value = normalized;
+          if (badgeBgHex) badgeBgHex.textContent = normalized;
+          syncColorState();
+        } else {
+          currentBranding.bg_gradient_from = val;
+          currentBranding.bg_gradient_to = val;
+          if (badgeBgHex) badgeBgHex.textContent = val.toUpperCase();
         }
-        if (badgeBgHex) badgeBgHex.textContent = val.toUpperCase();
-        syncColorState();
       });
     }
 
@@ -2493,6 +2542,7 @@ export function renderCardBuilder(businessId) {
             t.className = 'btn-color-target-tab px-3 py-1 rounded-lg text-xs font-bold transition text-zinc-400 hover:text-white cursor-pointer';
           }
         });
+        syncColorState();
       });
     });
 
@@ -2500,7 +2550,7 @@ export function renderCardBuilder(businessId) {
     container.querySelectorAll('.btn-color-swatch').forEach(swatch => {
       swatch.addEventListener('click', (e) => {
         e.preventDefault();
-        const hex = swatch.dataset.color.toUpperCase();
+        const hex = normalizeHex(swatch.dataset.color, '#0F172A');
         if (activeColorTarget === 'bg') {
           currentBranding.bg_gradient_from = hex;
           currentBranding.bg_gradient_to = hex;
@@ -2569,6 +2619,14 @@ export function renderCardBuilder(businessId) {
     // --- SAVE BUTTON LOGIC (TOP & BOTTOM) ---
     function handleSaveProgram(e) {
       if (e) e.preventDefault();
+
+      const normalizedBg = normalizeHex(currentBranding.bg_gradient_from, '#0F172A');
+      const normalizedPrimary = normalizeHex(currentBranding.primary_color, '#0EA5E9');
+
+      currentBranding.bg_gradient_from = normalizedBg;
+      currentBranding.bg_gradient_to = normalizedBg;
+      currentBranding.primary_color = normalizedPrimary;
+
       const updates = {
         name: cardName,
         stamps_required: totalStamps,
@@ -2583,7 +2641,15 @@ export function renderCardBuilder(businessId) {
         coupon_code: couponCode,
         min_spend: minSpend,
         branding: {
+          ...activeProgram.branding,
           ...currentBranding,
+          primary_color: normalizedPrimary,
+          bg_gradient_from: normalizedBg,
+          bg_gradient_to: normalizedBg,
+          stamp_completed_image: currentBranding.stamp_completed_image || null,
+          stamp_uncompleted_image: currentBranding.stamp_uncompleted_image || null,
+          stamp_custom_image: currentBranding.stamp_completed_image || null,
+          bg_image_url: currentBranding.bg_image_url || null,
           logo_url: currentLogoUrl
         }
       };
@@ -2608,6 +2674,9 @@ export function renderCardBuilder(businessId) {
 
     // Render Quick Selection libraries for all categories
     ['logo', 'stamp_completed', 'stamp_uncompleted', 'banner'].forEach(cat => renderQuickFiles(cat));
+
+    // Highlight initial active swatch in color grid
+    syncColorState();
 
     // Wire error alert dismiss buttons
     container.querySelectorAll('.btn-dismiss-alert').forEach(btn => {
