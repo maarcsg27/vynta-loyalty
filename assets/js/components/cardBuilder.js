@@ -1473,19 +1473,32 @@ export function renderCardBuilder(businessId) {
       const key = `vynta_quick_${category}_${business?.id || 'default'}`;
       let list = getQuickFiles(category);
       list = list.filter(item => item.url !== url);
-      const defaultName = category === 'banner' ? 'Banner' : category === 'logo' ? 'Logo' : category === 'stamp_uncompleted' ? 'Sello Vacío' : 'Sello Activo';
+      const defaultName = category === 'banner' ? 'Banner' : category === 'logo' ? 'Logo' : category === 'stamp_uncompleted' ? 'Sello Base' : 'Sello Lleno';
       list.unshift({
         id: 'qf_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
         url,
         name: name || defaultName,
         timestamp: Date.now()
       });
-      list = list.slice(0, 12);
+      list = list.slice(0, 6);
       localStorage.setItem(key, JSON.stringify(list));
       localStorage.setItem(`vynta_quick_${category}_global`, JSON.stringify(list));
       renderQuickFiles(category);
     } catch (e) {
       console.warn('Could not save quick file:', e);
+      try {
+        const key = `vynta_quick_${category}_${business?.id || 'default'}`;
+        let list = [{
+          id: 'qf_' + Date.now(),
+          url,
+          name: name || (category === 'stamp_uncompleted' ? 'Sello Base' : 'Sello Lleno'),
+          timestamp: Date.now()
+        }];
+        localStorage.setItem(key, JSON.stringify(list));
+        renderQuickFiles(category);
+      } catch (err2) {
+        console.warn('Storage quota limit:', err2);
+      }
     }
   }
 
@@ -1642,24 +1655,37 @@ export function renderCardBuilder(businessId) {
 
         try {
           const canvas = document.createElement('canvas');
-          const maxW = category === 'banner' ? 1200 : 512;
+          let maxW = 512;
+          if (category.startsWith('stamp')) {
+            maxW = 200;
+          } else if (category === 'logo') {
+            maxW = 256;
+          } else if (category === 'banner') {
+            maxW = 800;
+          }
+
           let targetW = width;
           let targetH = height;
-          if (targetW > maxW) {
-            targetH = Math.round((targetH * maxW) / targetW);
-            targetW = maxW;
+          if (targetW > maxW || targetH > maxW) {
+            if (targetW >= targetH) {
+              targetH = Math.round((targetH * maxW) / targetW);
+              targetW = maxW;
+            } else {
+              targetW = Math.round((targetW * maxW) / targetH);
+              targetH = maxW;
+            }
           }
-          canvas.width = targetW;
-          canvas.height = targetH;
+          canvas.width = Math.max(1, targetW);
+          canvas.height = Math.max(1, targetH);
           const ctx = canvas.getContext('2d');
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
-          ctx.clearRect(0, 0, targetW, targetH);
-          ctx.drawImage(img, 0, 0, targetW, targetH);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
           const isJpeg = fileType.includes('jpeg') || fileType.includes('jpg');
-          const outputFormat = isJpeg ? 'image/jpeg' : 'image/png';
-          const optimizedDataUrl = canvas.toDataURL(outputFormat, 0.92);
+          const outputFormat = category.startsWith('stamp') || category === 'logo' ? 'image/png' : (isJpeg ? 'image/jpeg' : 'image/webp');
+          const optimizedDataUrl = canvas.toDataURL(outputFormat, 0.85);
 
           clearErrorNotice(category);
           onValid(optimizedDataUrl, file.name);

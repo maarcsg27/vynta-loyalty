@@ -60,7 +60,21 @@ class StorageEngine {
         this.emit('change', this.data);
       }
     } catch (e) {
-      console.error('Error saving VYNTA db:', e);
+      console.warn('Error saving VYNTA db, performing storage quota cleanup:', e);
+      try {
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k !== STORAGE_KEY && (k.startsWith('vynta_quick_') || k.startsWith('temp_'))) {
+            keysToRemove.push(k);
+          }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+        if (shouldEmit) this.emit('change', this.data);
+      } catch (err2) {
+        console.error('Critical quota error saving VYNTA db:', err2);
+      }
     }
   }
 
